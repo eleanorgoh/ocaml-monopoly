@@ -23,6 +23,10 @@ type action =
   | GoJail
   | Advance of string
 
+(** [init_card ctg name act] is a card with category [ctg], name [name], 
+    and action [act]. *)
+val init_card : category -> string -> action -> t
+
 (** [get_category card] is the category of [card]. *)
 val get_category : t -> category
 
