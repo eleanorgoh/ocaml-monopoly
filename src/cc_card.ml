@@ -20,6 +20,8 @@ let init_card ctg name act = {
   action = act;
 }
 
+let get_name card = card.name
+
 let get_category card = card.category
 
 let get_action card = card.action

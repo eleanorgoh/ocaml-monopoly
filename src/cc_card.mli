@@ -27,6 +27,9 @@ type action =
     and action [act]. *)
 val init_card : category -> string -> action -> t
 
+(** [get_name card] is the name of [card]. *)
+val get_name : t -> category
+
 (** [get_category card] is the category of [card]. *)
 val get_category : t -> category
 
