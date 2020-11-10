@@ -22,3 +22,9 @@ type action =
   | OutJail
   | GoJail
   | Advance of string
+
+(** [get_category card] is the category of [card]. *)
+val get_category : t -> category
+
+(** [get_action card] is the action of [card]. *)
+val get_action : t -> category

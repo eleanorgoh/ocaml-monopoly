@@ -14,3 +14,7 @@ type t = {
   name : string;
   action : action;
 }
+
+let get_category card = card.category
+
+let get_action card = card.action
