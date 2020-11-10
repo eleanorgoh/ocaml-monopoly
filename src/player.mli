@@ -1,3 +1,4 @@
+(** [t] is the abstract type of values representing a Player. *)
 type t
 
 (** [init_new_player name id marker] initializes a new player with 

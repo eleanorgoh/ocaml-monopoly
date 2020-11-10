@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player
+MODULES=author src/cc_card src/player src/action
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -10,8 +10,8 @@ default: build
 build:
 	$(OCAMLBUILD) $(OBJECTS)
 
-# test:
-# 	$(OCAMLBUILD) -tag 'debug' src/test.byte && ./test.byte
+action-test:
+	$(OCAMLBUILD) -tag 'debug' src/action_test.byte && ./action_test.byte
 
 check:
 	bash checkenv.sh
