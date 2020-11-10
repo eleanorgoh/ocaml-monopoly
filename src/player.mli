@@ -1,22 +1,24 @@
 type t
 
-(** Initializes a new player with name [name], id [id] and marker [marker]. *)
+(** [init_new_player name id marker] initializes a new player with 
+    name [name], id [id] and marker [marker]. *)
 val init_new_player : string -> int -> string -> t
 
-(** The name of this player. *)
+(** [get_name p] is the name of player [p]. *)
 val get_name : t -> string 
 
-(** The account id of this player. *)
+(** [get_account p] is the account id of player [p]. *)
 val get_account : t -> int 
 
-(** The marker type of this player. *)
+(** [get_marker_type p] is the marker type of player [p]. *)
 val get_marker_type : t -> string
 
-(** Sets the name of this player to [name]. *)
+(** [set_name p name] sets the name of player [p] to [name]. *)
 val set_name : t -> string -> t
 
-(** Sets the account id of this player to [id]. *)
+(** [set_account_id p id] sets the account id of player [p] to [id]. *)
 val set_account_id : t -> int -> t
 
-(** Sets the marker type of this player to [marker]. *)
+(** [set_marker_type p marker] sets the marker type of player [p] 
+    to [marker]. *)
 val set_marker_type : t -> string -> t
