@@ -32,7 +32,7 @@ let pp_list pp_elt lst =
   in "[" ^ pp_elts lst ^ "]"
 
 (** [check_validity] is false if the outcome of [roll] is of type Step and 
-    is in [2..35], true otherwise. *)
+    has a value not in [2..35], true otherwise. *)
 let check_validity = function
   | Jail -> true 
   | Step n -> n >= 2 && n <= 35
