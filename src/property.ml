@@ -1,4 +1,3 @@
-open Player
 
 type color = 
   | Brown
@@ -11,7 +10,7 @@ type color =
   | Dark_Blue
 
 type t = {
-  owner : Player.t;
+  (* owner : Player.t option; *)
   name : string;
   color : color;
   rent_no_house : int;
@@ -26,11 +25,11 @@ type t = {
 }
 
 let init_property 
-    (owner : Player.t) (name : string) (color : color)  
+    (name : string) (color : color)  
     (rent_no_house : int) (rent_1_house : int) (rent_2_house : int)
     (rent_3_house : int) (rent_4_house : int) (rent_hotel : int)
     (building_cost : int) (price : int) (num_buildings : int) = {
-  owner = owner;
+  (* owner = None; *)
   name = name;
   color = color;
   rent_no_house = rent_no_house;
@@ -44,9 +43,9 @@ let init_property
   num_buildings = 0;
 }
 
-let get_owner (property : t) : Player.t = property.owner
+(* let get_owner (property : t) = property.owner *)
 
-let get_name (property : t) : string = property.name
+let get_name (property : t) : string = property.name 
 
 let get_color (property : t) : color = property.color
 
