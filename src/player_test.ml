@@ -149,7 +149,8 @@ let property_tests = [
     player_1_with_two_properties (pp_list property_to_string) [prop_1; prop_3];
 
   (* Test remove_property *)
-  update_error "Removing but Eleanor has no properties" Player.remove_property player_2 prop_1 "Player does not own this property";
+  update_error "Removing but Eleanor has no properties" Player.remove_property 
+    player_2 prop_1 "Player does not own this property";
   two_arg_func_test "Removing one of Sam's 2 properties" Player.remove_property 
     player_1_with_two_properties prop_3 player_to_string 
     player_1_with_one_property;
