@@ -10,8 +10,8 @@ default: build
 build:
 	$(OCAMLBUILD) $(OBJECTS)
 
-# test:
-# 	$(OCAMLBUILD) -tag 'debug' src/test.byte && ./test.byte
+player-test:
+	$(OCAMLBUILD) -tag 'debug' src/player_test.byte && ./player_test.byte
 
 check:
 	bash checkenv.sh
@@ -20,4 +20,4 @@ clean:
 	ocamlbuild -clean
 
 zip:
-	zip ocaml-messenger.zip *.ml* src/*.ml* .ocamlinit .merlin *.md _tags Makefile
+	zip monopoly.zip *.ml* src/*.ml* .ocamlinit .merlin *.md _tags Makefile

@@ -1,4 +1,3 @@
-open Player
 
 (* Properties may be bought in one of 3 ways: landing on the property space and buying it, being the highest bidder in an auction for property, or buy it from 
    an opponent in a trade. Properties may also be received from bankrupted players, provided the Bank didn't bankrupt them.
@@ -24,14 +23,16 @@ type color =
   | Green
   | Dark_Blue
 
-(** [init_property] is a Property with owner [Player], name [string], 
-    color [color], rent_no_house [int], rent_1_house [int], rent_2_house [int], rent_3_house [int], rent_4_house [int], rent_house [int], 
-    building_cost [int], price [int], num_buildings [int]. *)
-val init_property : Player.t -> string -> color -> int -> int -> int -> 
+(** [init_property string color r0 r1 r2 r3 r4 r5 bc pr nb] is a 
+    Property with no owner, name [string], 
+    color [color], rent_no_house [r0], rent_1_house [r1], rent_2_house [r2], 
+    rent_3_house [r3], rent_4_house [r4], rent_house [r5], 
+    building_cost [bc], price [pr], num_buildings [nb]. *)
+val init_property : string -> color -> int -> int -> int -> 
   int -> int -> int -> int -> int -> int ->  t
 
-(** [get_owner property] is the Player that owns the card. *)
-val get_owner : t -> Player.t
+(** [get_owner property] is either Some player that owns the card or None. *)
+(* val get_owner : t -> Player.t option *)
 
 (** [get_name property] is the name of the property. *)
 val get_name : t -> string
