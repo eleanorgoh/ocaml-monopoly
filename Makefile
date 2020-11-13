@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player src/property
+MODULES=author src/cc_card src/player src/action src/property
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -10,6 +10,8 @@ default: build
 build:
 	$(OCAMLBUILD) $(OBJECTS)
 
+action-test:
+	$(OCAMLBUILD) -tag 'debug' src/action_test.byte && ./action_test.byte
 player-test:
 	$(OCAMLBUILD) -tag 'debug' src/player_test.byte && ./player_test.byte
 

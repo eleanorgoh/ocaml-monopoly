@@ -1,6 +1,6 @@
 type t = {
   name : string; 
-  money : int;
+  mutable money : int;
   properties : Property.t list;
   marker : string;
 }
@@ -44,6 +44,6 @@ let remove_property p prop =
 
 let set_name p name = {p with name = name}
 
-let set_money p amt = {p with money = amt}
+let set_money p amt = p.money <- amt
 
 let set_marker_type p marker = {p with marker = marker}
