@@ -27,29 +27,31 @@ let roll_tests = [
   roll_dice_test "roll dice 4" true;
 ]
 
-let prop_1 = Property.init_property "PSB" Green 0 1 2 3 4 5 1 1 0
-let prop_2 = Property.init_property "Home" Yellow 0 1 2 3 4 5 1 1 0
-let prop_3 = Property.init_property "Slope" Yellow 0 1 2 3 4 5 1 1 0
-let prop_4 = Property.init_property "Duffield" Yellow 0 1 2 3 4 5 1 1 3
-let prop_5 = Property.init_property "Mac's" Yellow 0 1 2 3 4 5 1 9999 0
-let prop_6 = Property.init_property "Terrace" Green 1 1 1 1 1 1 1 9999 0
+let prop_1 = Property.init_property "PSB" Green 0 1 2 3 4 5 1 1 
+let prop_2 = Property.init_property "Home" Yellow 0 1 2 3 4 5 1 1 
+let prop_3 = Property.init_property "Slope" Yellow 0 1 2 3 4 5 1 1 
+let prop_4 = Property.init_property "Duffield" Yellow 0 1 2 3 4 5 0 1 
+let prop_5 = Property.init_property "Mac's" Yellow 0 1 2 3 4 5 1 9999 
+let prop_6 = Property.init_property "Terrace" Green 1 1 1 1 1 1 1 9999 
 
-let prop_7 = Property.init_property "Sage" Brown 1 1 1 1 1 1 1 10 0
+let prop_7 = Property.init_property "Sage" Brown 1 1 1 1 1 1 1 10 
 let prop_8 = Property.init_property "Expensive Rent" Green 9999 9999 9999 9999
-    9999 9999 9999 10 0
-let prop_9 = Property.init_property "Olin" Light_Blue 1 1 1 1 1 1 1 10 0
+    9999 9999 9999 10 
+let prop_9 = Property.init_property "Olin" Light_Blue 1 1 1 1 1 1 1 10 
+let prop_10 = Property.init_property "Libe" Light_Blue 0 0 0 1 1 1 0 0 
 
 let p1 = init_new_player "Sam" "gudetama"
 
 let p2 = init_new_player "Eleanor" "puppy"
 let p3 = init_new_player "John" "bear"
-let p4 = Action.buy_property prop_4 (init_new_player "George" "camel")
-let p5 = Action.buy_property prop_8 (init_new_player "Orwell" "animal")
+let p4 = Action.buy_property prop_4 (init_new_player "George" "camel") (* 1499 *)
+let p5 = Action.buy_property prop_8 (init_new_player "Orwell" "animal") (* 1490 *)
 
 let p1_1_prop = add_property (init_new_player "Sam" "gudetama") 
     prop_1 
 let p1_2_prop = add_property p1_1_prop 
     prop_3
+let p2_1_prop = add_property (init_new_player "Eleanor" "puppy") prop_10
 let p3_1_prop = add_property (init_new_player "John" "bear") prop_6
 let p4_1_prop = add_property (init_new_player "Eric" "horse") prop_6
 let p6_1_prop = add_property (init_new_player "Sarah" "fish") prop_6
@@ -73,8 +75,15 @@ let () = Action.buy_building prop_3 p1_2_prop
 (* Buys fifth building for p1 on prop3 *)
 let () = Action.buy_building prop_3 p1_2_prop 
 
+
+let () = Action.buy_building prop_4 p4 
+let () = Action.buy_building prop_4 p4 
+let () = Action.buy_building prop_4 p4 
 (** P4 collects rent from P5, legally, prop_4 has 3 houses *)
 let () = Action.collect_rent p4 p5 prop_4
+
+(** P2_1_prop collects rent from P3, and has 0 houses *)
+let () = Action.collect_rent p2_1_prop p3 prop_10
 
 let transaction_tests = [
   (* buy_property tests *)
@@ -104,13 +113,17 @@ let transaction_tests = [
       this property.");
 
   (* collect_rent tests *)
-  (* one_arg_func_test "Check transaction after P5 lands on P4's property with 
-     3 houses - P5" Player.get_money p5 string_of_int 1497;
-     one_arg_func_test "Check transaction after P5 lands on P4's property with 
-     3 houses - P4" Player.get_money p4 string_of_int 1503;
-     three_arg_func_exception "P5 collects rent from P1, legally, prop_8 brings 
+  one_arg_func_test "Check transaction after P5 lands on P4's property with 
+     3 houses - P5" Player.get_money p5 string_of_int 1487;
+  one_arg_func_test "Check transaction after P5 lands on P4's property with 
+     3 houses - P4" Player.get_money p4 string_of_int 1502;
+  one_arg_func_test "Check transaction after P3 lands on P2's property with 
+     0 houses - P2" Player.get_money p2_1_prop string_of_int 1500;
+  one_arg_func_test "Check transaction after P3 lands on P2's property with 
+     0 houses - P3" Player.get_money p3 string_of_int 1500;
+  three_arg_func_exception "P5 collects rent from P1, legally, prop_8 brings 
      P1 bankrupt" Action.collect_rent p5 p1 prop_8 
-     (PlayerBankrupt "Payer is bankrupt!"); *)
+    (PlayerBankrupt "Payer is bankrupt!");
 
   (* sell_property tests *)
   two_arg_func_exception "Player tries to sell property they don't own" 
@@ -128,7 +141,6 @@ let transaction_tests = [
   two_arg_getter "Player with two properties sells property - check money" 
     Action.sell_property prop_9 p7_2_prop Player.get_money string_of_int 
     (1505); 
-
 ]
 
 let suite =

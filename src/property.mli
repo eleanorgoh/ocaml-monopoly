@@ -27,9 +27,9 @@ type color =
     Property with name [string], 
     color [color], rent_no_house [r0], rent_1_house [r1], rent_2_house [r2], 
     rent_3_house [r3], rent_4_house [r4], rent_house [r5], 
-    building_cost [bc], price [pr], num_buildings [nb]. *)
+    building_cost [bc], price [pr]. *)
 val init_property : string -> color -> int -> int -> int -> 
-  int -> int -> int -> int -> int -> int ->  t
+  int -> int -> int -> int -> int ->  t
 
 (** [get_owner property] is either Some player that owns the card or None. *)
 (* val get_owner : t -> Player.t option *)

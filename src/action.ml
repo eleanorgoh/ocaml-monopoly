@@ -56,13 +56,16 @@ let buy_building property player =
   Property.add_building property  
 
 let collect_rent collector payer property = 
-  let rent = Property.get_rent_cost property in 
-  let payer_money = Player.get_money payer in 
-  let collector_money = Player.get_money collector in 
-  if payer_money < rent then raise (PlayerBankrupt "Payer is bankrupt!")
-  else 
-    Player.set_money collector (collector_money + rent); 
-  Player.set_money payer (payer_money - rent)
+  if not (List.mem property (Player.get_properties collector)) then raise 
+      (TransactionError "Collector does not own this property.")
+  else
+    let rent = Property.get_rent_cost property in 
+    let payer_money = Player.get_money payer in 
+    let collector_money = Player.get_money collector in 
+    if payer_money < rent then raise (PlayerBankrupt "Payer is bankrupt!")
+    else 
+      Player.set_money collector (collector_money + rent); 
+    Player.set_money payer (payer_money - rent)
 
 let sell_property property player = 
   let resale_price = Property.get_price property / 2 in 

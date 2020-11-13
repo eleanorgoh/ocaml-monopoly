@@ -14,11 +14,11 @@ let init_player_tests = [
     (pp_list property_to_string) [];
 ]
 
-let prop_1 = Property.init_property "PSB" Green 1 1 1 1 2 3 4 5 0
-let prop_2 = Property.init_property "Home" Yellow 1 1 1 1 1 1 1 1 0
-let prop_3 = Property.init_property "Slope" Yellow 1 1 1 1 1 1 1 1 0
-let prop_4 = Property.init_property "Duffield" Yellow 1 1 1 1 1 1 1 1 0
-let prop_5 = Property.init_property "Mac's" Yellow 1 1 1 1 1 1 1 1 0
+let prop_1 = Property.init_property "PSB" Green 1 1 1 1 2 3 4 5 
+let prop_2 = Property.init_property "Home" Yellow 1 1 1 1 1 1 1 1 
+let prop_3 = Property.init_property "Slope" Yellow 1 1 1 1 1 1 1 1 
+let prop_4 = Property.init_property "Duffield" Yellow 1 1 1 1 1 1 1 1 
+let prop_5 = Property.init_property "Mac's" Yellow 1 1 1 1 1 1 1 1 
 let player_1 = init_new_player "Sam" "gudetama"
 let player_1_with_one_property = add_property (init_new_player "Sam" "gudetama") 
     prop_1 
@@ -54,7 +54,7 @@ let property_tests = [
   one_arg_func_test "Sam has 1 property" Player.get_properties 
     player_1_with_one_property (pp_list property_to_string) [prop_1];
   one_arg_func_test "Sam has 2 properties" Player.get_properties 
-    player_1_with_two_properties (pp_list property_to_string) [prop_1; prop_3];
+    player_1_with_two_properties (pp_list property_to_string) [prop_3; prop_1];
 
   (* Test remove_property *)
   two_arg_func_exception "Removing but Eleanor has no properties" 

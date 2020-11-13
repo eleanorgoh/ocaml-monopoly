@@ -28,7 +28,7 @@ let init_property
     (name : string) (color : color)  
     (rent_no_house : int) (rent_1_house : int) (rent_2_house : int)
     (rent_3_house : int) (rent_4_house : int) (rent_hotel : int)
-    (building_cost : int) (price : int) (num_buildings : int) = {
+    (building_cost : int) (price : int) = {
   (* owner = None; *)
   name = name;
   color = color;
