@@ -51,7 +51,7 @@
     },
     {
       "position": 7,
-			"Type": "Jail"
+			"type": "Jail"
 		}
 	]
 }
