@@ -30,15 +30,17 @@ let roll_tests = [
 let prop_1 = Property.init_property "PSB" Green 0 1 2 3 4 5 1 1 0
 let prop_2 = Property.init_property "Home" Yellow 0 1 2 3 4 5 1 1 0
 let prop_3 = Property.init_property "Slope" Yellow 0 1 2 3 4 5 1 1 0
-let prop_4 = Property.init_property "Duffield" Yellow 0 1 2 3 4 5 1 0 3
+let prop_4 = Property.init_property "Duffield" Yellow 0 1 2 3 4 5 1 1 3
 let prop_5 = Property.init_property "Mac's" Yellow 0 1 2 3 4 5 1 9999 0
 let prop_6 = Property.init_property "Terrace" Green 1 1 1 1 1 1 1 9999 0
+
 let prop_7 = Property.init_property "Sage" Brown 1 1 1 1 1 1 1 10 0
 let prop_8 = Property.init_property "Expensive Rent" Green 9999 9999 9999 9999
     9999 9999 9999 10 0
 let prop_9 = Property.init_property "Olin" Light_Blue 1 1 1 1 1 1 1 10 0
 
 let p1 = init_new_player "Sam" "gudetama"
+
 let p2 = init_new_player "Eleanor" "puppy"
 let p3 = init_new_player "John" "bear"
 let p4 = Action.buy_property prop_4 (init_new_player "George" "camel")
@@ -54,6 +56,8 @@ let p6_1_prop = add_property (init_new_player "Sarah" "fish") prop_6
 let p6_2_prop = add_property p6_1_prop prop_7
 let p7_1_prop = add_property (init_new_player "Emily" "dog") prop_6
 let p7_2_prop = add_property p7_1_prop prop_9
+let p8 = init_new_player "Jam" "cat"
+
 
 (* Buys first building for p1 on prop1 *)
 let () = Action.buy_building prop_1 p1_1_prop 
@@ -82,7 +86,7 @@ let transaction_tests = [
     (TransactionError "Player does not have enough money to buy this 
       property.");
   two_arg_getter "Player with no properties buys one property - check money" 
-    Action.buy_property prop_1 p1 Player.get_money string_of_int 1499; 
+    Action.buy_property prop_1 p8 Player.get_money string_of_int 1499; 
   two_arg_func_exception "Player tries to buy property they already own" 
     Action.buy_property prop_1 p1_1_prop
     (TransactionError "Player already owns this property.");
@@ -109,21 +113,21 @@ let transaction_tests = [
      (PlayerBankrupt "Payer is bankrupt!"); *)
 
   (* sell_property tests *)
-  (* two_arg_func_exception "Player tries to sell property they don't own" 
-     Action.sell_property prop_1 p3
-     (TransactionError "Player can't sell property they don't own.");
-     two_arg_getter "Player with one property sells property - check property" 
-     Action.sell_property prop_6 p3_1_prop Player.get_properties 
-     (pp_list property_to_string) []; 
-     two_arg_getter "Player with one property sells property - check money" 
-     Action.sell_property prop_6 p4_1_prop Player.get_money string_of_int 
-     (1500 + 9999 / 2); 
-     two_arg_getter "Player with two properties sells property - check property" 
-     Action.sell_property prop_7 p6_2_prop Player.get_properties 
-     (pp_list property_to_string) [prop_6]; 
-     two_arg_getter "Player with two properties sells property - check money" 
-     Action.sell_property prop_6 p7_2_prop Player.get_money string_of_int 
-     (9999 / 2);  *)
+  two_arg_func_exception "Player tries to sell property they don't own" 
+    Action.sell_property prop_1 p3
+    (TransactionError "Player can't sell property they don't own.");
+  two_arg_getter "Player with one property sells property - check property" 
+    Action.sell_property prop_6 p3_1_prop Player.get_properties 
+    (pp_list property_to_string) []; 
+  two_arg_getter "Player with one property sells property - check money" 
+    Action.sell_property prop_6 p4_1_prop Player.get_money string_of_int 
+    (1500 + 4999); 
+  two_arg_getter "Player with two properties sells property - check property" 
+    Action.sell_property prop_7 p6_2_prop Player.get_properties 
+    (pp_list property_to_string) [prop_6]; 
+  two_arg_getter "Player with two properties sells property - check money" 
+    Action.sell_property prop_9 p7_2_prop Player.get_money string_of_int 
+    (1505); 
 
 ]
 
