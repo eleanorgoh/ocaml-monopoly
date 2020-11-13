@@ -37,7 +37,7 @@ val remove_property : t -> Property.t -> t
 val set_name : t -> string -> t
 
 (** [set_money p amt] sets the account of player [p] to [amt]. *)
-val set_money : t -> int -> t
+val set_money : t -> int -> unit
 
 (** [set_marker_type p marker] sets the marker type of player [p] 
     to [marker]. *)

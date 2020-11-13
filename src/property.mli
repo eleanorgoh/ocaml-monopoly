@@ -24,30 +24,35 @@ type color =
   | Dark_Blue
 
 (** [init_property string color r0 r1 r2 r3 r4 r5 bc pr nb] is a 
-    Property with no owner, name [string], 
+    Property with name [string], 
     color [color], rent_no_house [r0], rent_1_house [r1], rent_2_house [r2], 
     rent_3_house [r3], rent_4_house [r4], rent_house [r5], 
-    building_cost [bc], price [pr], num_buildings [nb]. *)
+    building_cost [bc], price [pr]. *)
 val init_property : string -> color -> int -> int -> int -> 
-  int -> int -> int -> int -> int -> int ->  t
+  int -> int -> int -> int -> int ->  t
 
 (** [get_owner property] is either Some player that owns the card or None. *)
 (* val get_owner : t -> Player.t option *)
 
-(** [get_name property] is the name of the property. *)
+(** [get_name property] is the name of [property]. *)
 val get_name : t -> string
 
-(** [get_color property] is the color of the property. *)
+(** [get_color property] is the color of [property]. *)
 val get_color : t -> color
 
-(** [get_rent_cost property] is the rent price of the property. *)
+(** [get_rent_cost property] is the rent price of [property]. *)
 val get_rent_cost : t -> int
 
-(** [get_building_cost] is the cost of building a house/hotel on the property.*)
+(** [get_building_cost property] is the cost of building a house/hotel on 
+    [property].*)
 val get_building_cost : t -> int
 
-(** [get_price property] is the purchase price of the property. *)
+(** [get_price property property] is the purchase price of [property]. *)
 val get_price : t -> int 
 
-(** [get_num_buildings] is the number of buildings on the property. *)
+(** [get_num_buildings property] is the number of buildings on [property]. *)
 val get_num_buildings : t -> int
+
+(** [add_building prop] is [property] after adding a new building. 
+    Requires: property has less than 5 buildings.*)
+val add_building : t -> unit
