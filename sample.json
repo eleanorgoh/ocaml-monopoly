@@ -3,6 +3,8 @@
 		{
       "position": 0,
       "type": "Go",
+      "name" : "Go",
+      "color" : "",
       "prices" : {}
     },
     {
@@ -40,28 +42,37 @@
 		{
       "position": 3,
       "type": "Chance Card",
+      "name" : "Chance Card",
+      "color" : "",
       "prices" : {}
       
     },
     {
       "position": 4,
       "type": "Community Chest",
+      "name" : "Community Chest",
+      "color" : "",
       "prices" : {}
 		},
 		{
       "position": 5,
       "type": "Free Parking",
+      "name" : "Free Parking",
+      "color" : "",
       "prices" : {}
     },
     {
       "position": 6,
       "type": "Railroad",
       "name": "Pennsylvania Railroad",
+      "color" : "",
       "prices" : {}
     },
     {
       "position": 7,
       "type": "Jail",
+      "name" : "Jail",
+      "color" : "",
       "prices" : {}
 		}
 	]
