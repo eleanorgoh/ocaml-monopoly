@@ -21,7 +21,7 @@ type t = {
   rent_hotel : int;
   building_cost : int;
   price : int;
-  num_buildings : int;
+  mutable num_buildings : int;
 }
 
 let init_property 
@@ -64,3 +64,6 @@ let get_building_cost (property : t) : int = property.building_cost
 let get_price (property : t) : int = property.price
 
 let get_num_buildings (property : t) : int = property.num_buildings
+
+let add_building property = 
+  property.num_buildings <- property.num_buildings + 1
