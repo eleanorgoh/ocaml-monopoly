@@ -39,7 +39,7 @@ let add_property_tests = [
 ]
 
 let suite =
-  "test suite for A2"  >::: List.flatten [
+  "test suite for property"  >::: List.flatten [
     init_property_tests;
     add_property_tests;
 
