@@ -99,11 +99,27 @@ let three_arg_func_exception
   name >:: (fun _ -> 
       assert_raises ex (fun _ -> f arg1 arg2 arg3))
 
+(** [property_to_string prop] is the string form of the name of [prop]. *)
 let property_to_string prop = Property.get_name prop
 
+(** [property_option_to_string prop] is the string form of the name of [prop] 
+    if [prop] is some property, "None" otherwise. *)
 let property_option_to_string = function 
   | None -> "None"
   | Some p -> Property.get_name p
 
+(** [string_of_color color] is the string form of [color]. *)
+let string_of_color = function 
+  | Brown -> "Brown"
+  | Light_Blue -> "Light_Blue"
+  | Pink -> "Pink"
+  | Orange -> "Orange" 
+  | Red -> "Red"
+  | Yellow -> "Yellow"
+  | Green -> "Green"
+  | Dark_Blue -> "Dark_Blue"
+
+(** [player_to_string player] is the string form of the name of [player] 
+    and all of their properties. *)
 let player_to_string p = 
   (get_name p) ^ " " ^ (pp_list property_to_string (Player.get_properties p))
