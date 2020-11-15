@@ -17,6 +17,9 @@ player-test:
 property-test:
 	$(OCAMLBUILD) -tag 'debug' src/property_test.byte && ./property_test.byte
 
+graphics:
+	ocamlbuild -use-ocamlfind -pkg graphics src/render.native --
+
 check:
 	bash checkenv.sh
 

@@ -1,3 +1,8 @@
+# Dependencies
+Manual install:
+1. OCaml Graphics: Run `opam install graphics`. Make sure you have XQuartz (Check 3110 page for instructions).
+2. Yojson: Run `opam install yojson`. 
+
 # How to install and build Monopoly: 
 
 1. Run `make build` from top directory `~/monopoly`. 
