@@ -57,7 +57,7 @@ let get_rent_cost (property : t) : int =
   | 3 -> property.rent_3_house
   | 4 -> property.rent_4_house
   | 5 -> property.rent_hotel
-  | _ -> raise (Failure "Too many buildings")
+  | _ -> failwith ("Too many buildings.")
 
 let get_building_cost (property : t) : int = property.building_cost
 

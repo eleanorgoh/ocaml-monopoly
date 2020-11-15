@@ -1,0 +1,78 @@
+{
+	"tiles": [
+		{
+      "position": 0,
+      "type": "Go",
+      "name" : "Go",
+      "color" : "",
+      "prices" : {}
+    },
+    {
+      "position": 1,
+      "type": "Property",
+			"name": "Mediterranean Avenue",
+      "color": "Brown",
+      "prices" : {
+        "rent_no_house": 2,
+        "rent_1_house": 10,
+        "rent_2_house": 30,
+        "rent_3_house": 90,
+        "rent_4_house": 160,
+        "rent_hotel": 250,
+        "building_cost": 50,
+        "price": 60
+      }
+		},
+		{
+      "position": 2,
+      "type": "Property",
+			"name": "Baltic Avenue",
+      "color": "Brown",
+      "prices" : {
+        "rent_no_house": 4,
+        "rent_1_house": 20,
+        "rent_2_house": 60,
+        "rent_3_house": 180,
+        "rent_4_house": 320,
+        "rent_hotel": 450,
+        "building_cost": 50,
+        "price": 60
+      }
+		},
+		{
+      "position": 3,
+      "type": "Chance Card",
+      "name" : "Chance Card",
+      "color" : "",
+      "prices" : {}
+    },
+    {
+      "position": 4,
+      "type": "Community Chest",
+      "name" : "Community Chest",
+      "color" : "",
+      "prices" : {}
+		},
+		{
+      "position": 5,
+      "type": "Free Parking",
+      "name" : "Free Parking",
+      "color" : "",
+      "prices" : {}
+    },
+    {
+      "position": 6,
+      "type": "Railroad",
+      "name": "Pennsylvania Railroad",
+      "color" : "",
+      "prices" : {}
+    },
+    {
+      "position": 7,
+      "type": "Jail",
+      "name" : "Jail",
+      "color" : "",
+      "prices" : {}
+		}
+	]
+}

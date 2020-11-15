@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player src/action src/property
+MODULES=author src/cc_card src/player src/action src/property src/board
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -24,4 +24,4 @@ clean:
 	ocamlbuild -clean
 
 zip:
-	zip monopoly.zip *.ml* src/*.ml* .ocamlinit .merlin *.md _tags Makefile
+	zip monopoly.zip *.ml* *.json src/*.ml* .ocamlinit .merlin *.md _tags Makefile
