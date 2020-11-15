@@ -14,6 +14,8 @@ action-test:
 	$(OCAMLBUILD) -tag 'debug' src/action_test.byte && ./action_test.byte
 player-test:
 	$(OCAMLBUILD) -tag 'debug' src/player_test.byte && ./player_test.byte
+property-test:
+	$(OCAMLBUILD) -tag 'debug' src/property_test.byte && ./property_test.byte
 
 check:
 	bash checkenv.sh
