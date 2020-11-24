@@ -1,22 +1,23 @@
 
 (** The type of values representing a command a player can issue. 
-    1. Start: start the game.
-    2. Quit: quit the game.
-    3. Restart: restart the game.
-    4.End_Turn: end the current player's turn.
-    5. Forfeit: forfeit the current player's standing.
-    6. Player_Name str: [str] is the name of a new player.
-    7. Roll: roll dice.
-    8. Draw_Chance: draw from the deck of Chance cards.
-    9. Draw_Community: draw from the deck of Community Chest cards.
-    10. Buy prop: [prop] is the name of a property the current player 
+    1. [Start]: start the game.
+    2. [Quit]: quit the game.
+    3. [Restart]: restart the game.
+    4.[End_Turn]: end the current player's turn.
+    5. [Forfeit]: forfeit the current player's standing.
+    6. [Player_Name str]: [str] is the name of a new player.
+    7. [Roll]: roll dice.
+    8. [Draw_Chance]: draw from the deck of Chance cards.
+    9. [Draw_Community]: draw from the deck of Community Chest cards.
+    10. [Buy prop]: [prop] is the name of a property the current player 
     wants to buy.
-    11. Sell prop: [prop] is the name of a property the current player 
+    11. [Sell prop]: [prop] is the name of a property the current player 
     wants to sell.
-    12. Collect triple: [triple] is a string triple in which the first 
+    12. [Collect triple]: [triple] is a string triple in which the first 
     element is the name of the current player, the second element is the 
     name of the player from whom money is being collected, and the third 
     element is the name of the property associated with this transaction.
+    13. [Help]: get instructions on what commands the current player can issue.
 *)
 type t = 
   | Start
@@ -31,6 +32,7 @@ type t =
   | Buy of string 
   | Sell of string 
   | Collect of (string * string * string)
+  | Help
 
 (** Raised when a command cannot be parsed. *)
 exception Unparsable of string
@@ -47,22 +49,24 @@ exception Unparsable of string
     7. [parse "roll"]: [Roll]
     8. [parse "draw chance"]: [Draw_Chance]
     9. [parse "draw community"]: [Draw_Community]
-    10. [parse "buy atlantic ave"]: [Buy "Atlantic Ave"]
-    11. [parse "sell london ave"]: [Sell "London Ave"]
+    10. [parse "buy atlantic ave"]: [Buy "atlantic ave"]
+    11. [parse "sell london ave"]: [Sell "london ave"]
     12. [parse "collect John atlantic ave"]: 
     [Collect ("Stacy", "John", "Atlantic Ave")]
+    13. [parse "help"]: [Help]
 
-    [parse] is not case-sensitive, i.e. [parse "name John"] results in the 
-    same command as [parse "name john"].
+    [parse] is not case-sensitive, e.g. [parse "name John"] results in the 
+    same command as [parse "name john"] -> "[Player_Name "John"]; 
+    "parse "sell londON AvE"] results in the same command as 
+    [parse "Sell London Ave"] -> [Sell "london ave"].
 
     Requires: 
     (i) [str] contains only alphanumeric (A-Z, a-z, 0-9) and space 
     characters (only ASCII character code 32; not tabs or newlines, etc.).
-    (ii) If [str] contains multiple words, there can only be at most one
-     space between words where a word is a consecutive sequence of 
-     non-space characters. 
-     (iii) [str] cannot have leading or trailing whitespace, 
-     i.e. [str] must start and end with a non-space character. 
+    (ii) Names of properties are assumed to be composed of two words.
+
+    Raises Unparsable exception if input is empty, only contains space 
+    characters, or is malformed.
 
 *)
 val parse : string -> t
