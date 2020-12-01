@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player src/action src/property src/board
+MODULES=author src/cc_card src/player src/action src/property src/board src/command
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -16,6 +16,8 @@ player-test:
 	$(OCAMLBUILD) -tag 'debug' src/player_test.byte && ./player_test.byte
 property-test:
 	$(OCAMLBUILD) -tag 'debug' src/property_test.byte && ./property_test.byte
+command-test:
+	$(OCAMLBUILD) -tag 'debug' src/command_test.byte && ./command_test.byte
 
 check:
 	bash checkenv.sh

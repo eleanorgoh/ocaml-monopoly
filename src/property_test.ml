@@ -2,6 +2,17 @@ open OUnit2
 open Property
 open Test_utils
 
+(** [string_of_color color] is the string form of [color]. *)
+let string_of_color = function 
+  | Brown -> "Brown"
+  | Light_Blue -> "Light_Blue"
+  | Pink -> "Pink"
+  | Orange -> "Orange" 
+  | Red -> "Red"
+  | Yellow -> "Yellow"
+  | Green -> "Green"
+  | Dark_Blue -> "Dark_Blue"
+
 let prop1 = init_property "PSB" Light_Blue 0 1 2 3 4 5 10 20
 let prop2 = init_property "Duffield" Brown 0 1 2 3 4 5 10 20
 let prop3_1build = init_property "Sage" Green 0 1 2 3 4 5 10 20
