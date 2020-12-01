@@ -24,6 +24,9 @@ card-test:
 check:
 	bash checkenv.sh
 
+play:
+	$(OCAMLBUILD) src/main.byte && ./main.byte
+
 clean:
 	ocamlbuild -clean
 
