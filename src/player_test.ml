@@ -69,7 +69,7 @@ let property_tests = [
 ]
 
 let suite =
-  "test suite for A2"  >::: List.flatten [
+  "test suite for player test"  >::: List.flatten [
     init_player_tests;
     property_tests;
   ]
