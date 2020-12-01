@@ -59,6 +59,38 @@ let two_arg_func_test
       assert_equal expected_output (f arg1 arg2)
         ~printer:printer)
 
+(** [three_arg_func_test f arg1 arg2 arg3 printer expected_output] 
+    constructs an OUnit test named [name] that asserts the quality of 
+    [expected_output] with [f arg1 arg2 arg3]. *)
+let three_arg_func_test 
+    (name : string) 
+    f
+    arg1
+    arg2
+    arg3
+    printer
+    expected_output : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (f arg1 arg2 arg3)
+        ~printer:printer)
+
+(** [five_arg_func_test f arg1 arg2 arg3 arg4 arg5 printer expected_output] 
+    constructs an OUnit test named [name] that asserts the quality of 
+    [expected_output] with [f arg1 arg2 arg3 arg4 arg5]. *)
+let five_arg_func_test 
+    (name : string) 
+    f
+    arg1
+    arg2
+    arg3
+    arg4
+    arg5
+    printer
+    expected_output : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (f arg1 arg2 arg3 arg4 arg5)
+        ~printer:printer)
+
 (** [two_arg_getter f arg1 arg2 expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
     with [getter (f arg1 arg2)]. *)
@@ -74,6 +106,17 @@ let two_arg_getter
       assert_equal expected_output (getter (f arg1 arg2)) 
         ~printer:printer)
 
+(** [one_arg_func_exception name f arg ex] constructs an OUnit
+    test named [name] that asserts that [f arg] raises 
+    [ex]. *)
+let one_arg_func_exception
+    (name : string) 
+    f
+    arg
+    ex : test = 
+  name >:: (fun _ -> 
+      assert_raises ex (fun _ -> f arg))
+
 (** [two_arg_func_exception name f arg1 arg2 ex] constructs an OUnit
     test named [name] that asserts that [f arg1 arg2] raises 
     [ex]. *)
@@ -85,6 +128,21 @@ let two_arg_func_exception
     ex : test = 
   name >:: (fun _ -> 
       assert_raises ex (fun _ -> f arg1 arg2))
+
+(** [two_arg_func_exception name f arg1 arg2 ex] constructs an OUnit
+    test named [name] that asserts that [f arg1 arg2 arg3 arg4 arg5] raises 
+    [ex]. *)
+let five_arg_func_exception
+    (name : string) 
+    f
+    arg1
+    arg2
+    arg3
+    arg4
+    arg5
+    ex : test = 
+  name >:: (fun _ -> 
+      assert_raises ex (fun _ -> f arg1 arg2 arg3 arg4 arg5))
 
 (** [three_arg_func_exception f arg1 arg2 arg3 ex] constructs 
     an OUnit test named [name] that asserts that [f arg1 arg2 arg3] raises 
@@ -107,17 +165,6 @@ let property_to_string prop = Property.get_name prop
 let property_option_to_string = function 
   | None -> "None"
   | Some p -> Property.get_name p
-
-(** [string_of_color color] is the string form of [color]. *)
-let string_of_color = function 
-  | Brown -> "Brown"
-  | Light_Blue -> "Light_Blue"
-  | Pink -> "Pink"
-  | Orange -> "Orange" 
-  | Red -> "Red"
-  | Yellow -> "Yellow"
-  | Green -> "Green"
-  | Dark_Blue -> "Dark_Blue"
 
 (** [player_to_string player] is the string form of the name of [player] 
     and all of their properties. *)
