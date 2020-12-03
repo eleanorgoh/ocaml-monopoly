@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player src/action src/property src/board src/command
+MODULES=author src/cc_card src/player src/action src/property src/board src/command src/test_utils
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -18,6 +18,8 @@ property-test:
 	$(OCAMLBUILD) -tag 'debug' src/property_test.byte && ./property_test.byte
 command-test:
 	$(OCAMLBUILD) -tag 'debug' src/command_test.byte && ./command_test.byte
+card-test:
+	$(OCAMLBUILD) -tag 'debug' src/card_test.byte && ./card_test.byte
 
 graphics:
 	ocamlbuild -use-ocamlfind -pkg graphics src/render.native --
