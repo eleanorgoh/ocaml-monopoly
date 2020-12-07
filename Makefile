@@ -1,4 +1,4 @@
-MODULES=author src/cc_card src/player src/action src/property src/board src/command src/test_utils
+MODULES=author src/cc_card src/player src/action src/property src/newboard src/command src/test_utils
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
