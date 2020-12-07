@@ -81,5 +81,6 @@ let get_type (property : t) : tile_type = property.tile_type
 
 let get_pos (property : t) : int = property.position
 
-let add_building property = 
-  property.num_buildings <- property.num_buildings + 1
+let add_building (property : t) = 
+  if property.num_buildings = 5 then failwith ("Too many buildings.")
+  else property.num_buildings <- property.num_buildings + 1
