@@ -25,11 +25,13 @@ val get_type : t -> int -> Property.tile_type
 (** [get_color board position] is the color for the tile at [position]. *)
 val get_color : t -> int -> Property.color
 
-(** [get_rent board position] is the current price of rent for the tile at [position]. *)
+(** [get_rent board position] is the price of rent for the tile at [position].*)
 val get_rent : t -> int -> int
 
-(** [get_building_cost board position] is the building cost of a house for the tile at [position]. *)
+(** [get_building_cost board position] is the building cost 
+    of a house for the tile at [position]. *)
 val get_building_cost : t -> int -> int
 
-(** [get_num_buildings board position] is the number of buildings on the tile at [position]. *)
+(** [get_num_buildings board position] is the number of buildings 
+    on the tile at [position]. *)
 val get_num_buildings : t -> int -> int
