@@ -12,13 +12,14 @@ let string_of_color = function
   | Yellow -> "Yellow"
   | Green -> "Green"
   | Dark_Blue -> "Dark_Blue"
+  | No_Color -> "No_Color"
 
-let prop1 = init_property "PSB" Light_Blue 0 1 2 3 4 5 10 20
-let prop2 = init_property "Duffield" Brown 0 1 2 3 4 5 10 20
-let prop3_1build = init_property "Sage" Green 0 1 2 3 4 5 10 20
+let prop1 = init_property 1 "PSB" Light_Blue Railroad 0 1 2 3 4 5 10 20 0
+let prop2 = init_property 2 "Duffield" Brown Property 0 1 2 3 4 5 10 20 0
+let prop3_1build = init_property 3 "Sage" Green Tax 0 1 2 3 4 5 10 20 0
 let () = add_building prop3_1build
 
-let prop4_2build = init_property "WSH" Pink 0 1 2 3 4 5 10 20
+let prop4_2build = init_property 4 "WSH" Pink Property 0 1 2 3 4 5 10 20 0
 let () = add_building prop4_2build
 let () = add_building prop4_2build
 
@@ -53,7 +54,6 @@ let suite =
   "test suite for property"  >::: List.flatten [
     init_property_tests;
     add_property_tests;
-
   ]
 
 let _ = run_test_tt_main suite
