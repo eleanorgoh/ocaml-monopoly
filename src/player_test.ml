@@ -14,11 +14,12 @@ let init_player_tests = [
     (pp_list property_to_string) [];
 ]
 
-let prop_1 = Property.init_property "PSB" Green 1 1 1 1 2 3 4 5 
-let prop_2 = Property.init_property "Home" Yellow 1 1 1 1 1 1 1 1 
-let prop_3 = Property.init_property "Slope" Yellow 1 1 1 1 1 1 1 1 
-let prop_4 = Property.init_property "Duffield" Yellow 1 1 1 1 1 1 1 1 
-let prop_5 = Property.init_property "Mac's" Yellow 1 1 1 1 1 1 1 1 
+let prop_1 = Property.init_property 1 "PSB" Green Property 1 1 1 1 2 3 4 5 0
+let prop_2 = Property.init_property 1 "Home" Yellow Property 1 1 1 1 1 1 1 1 0
+let prop_3 = Property.init_property 1 "Slope" Yellow Property 1 1 1 1 1 1 1 1 0
+let prop_4 = Property.init_property 
+    1 "Duffield" Yellow Property 1 1 1 1 1 1 1 1 0
+let prop_5 = Property.init_property 1 "Mac's" Yellow Property 1 1 1 1 1 1 1 1 0
 let player_1 = init_new_player "Sam" "gudetama"
 let player_1_with_one_property = add_property (init_new_player "Sam" "gudetama") 
     prop_1 

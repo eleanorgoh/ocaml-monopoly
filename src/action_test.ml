@@ -27,18 +27,23 @@ let roll_tests = [
   roll_dice_test "roll dice 4" true;
 ]
 
-let prop_1 = Property.init_property "PSB" Green 0 1 2 3 4 5 1 1 
-let prop_2 = Property.init_property "Home" Yellow 0 1 2 3 4 5 1 1 
-let prop_3 = Property.init_property "Slope" Yellow 0 1 2 3 4 5 1 1 
-let prop_4 = Property.init_property "Duffield" Yellow 0 1 2 3 4 5 0 1 
-let prop_5 = Property.init_property "Mac's" Yellow 0 1 2 3 4 5 1 9999 
-let prop_6 = Property.init_property "Terrace" Green 1 1 1 1 1 1 1 9999 
+let prop_1 = Property.init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 0
+let prop_2 = Property.init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 0
+let prop_3 = Property.init_property 0 "Slope" Yellow Property 0 1 2 3 4 5 1 1 0
+let prop_4 = Property.init_property 
+    0 "Duffield" Yellow Property 0 1 2 3 4 5 0 1 0
+let prop_5 = Property.init_property 
+    0 "Mac's" Yellow Property 0 1 2 3 4 5 1 9999 0
+let prop_6 = Property.init_property 
+    0 "Terrace" Green Property 1 1 1 1 1 1 1 9999 0
 
-let prop_7 = Property.init_property "Sage" Brown 1 1 1 1 1 1 1 10 
-let prop_8 = Property.init_property "Expensive Rent" Green 9999 9999 9999 9999
-    9999 9999 9999 10 
-let prop_9 = Property.init_property "Olin" Light_Blue 1 1 1 1 1 1 1 10 
-let prop_10 = Property.init_property "Libe" Light_Blue 0 0 0 1 1 1 0 0 
+let prop_7 = Property.init_property 0 "Sage" Brown Property 1 1 1 1 1 1 1 10 0 
+let prop_8 = Property.init_property 
+    0 "Expensive Rent" Green Property 9999 9999 9999 9999 9999 9999 9999 10 0
+let prop_9 = Property.init_property 
+    0 "Olin" Light_Blue Property 1 1 1 1 1 1 1 10 0
+let prop_10 = Property.init_property 
+    0 "Libe" Light_Blue Property 0 0 0 1 1 1 0 0 0 
 
 let p1 = init_new_player "Sam" "gudetama"
 
