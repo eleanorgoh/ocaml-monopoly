@@ -1,4 +1,3 @@
-
 type color = 
   | Brown
   | Light_Blue
@@ -8,11 +7,25 @@ type color =
   | Yellow
   | Green
   | Dark_Blue
+  | No_Color
+
+type tile_type = 
+  | Property
+  | Railroad
+  | Utility
+  | Tax
+  | Chance_card
+  | Community_chest
+  | Free_parking
+  | Go_to_jail
+  | In_jail_just_visiting
+  | Go
 
 type t = {
-  (* owner : Player.t option; *)
+  position : int;
   name : string;
   color : color;
+  tile_type : tile_type;
   rent_no_house : int;
   rent_1_house : int;
   rent_2_house : int;
@@ -25,13 +38,14 @@ type t = {
 }
 
 let init_property 
-    (name : string) (color : color)  
+    (pos : int) (name : string) (color : color) (tile_type : tile_type)
     (rent_no_house : int) (rent_1_house : int) (rent_2_house : int)
     (rent_3_house : int) (rent_4_house : int) (rent_hotel : int)
-    (building_cost : int) (price : int) = {
-  (* owner = None; *)
+    (building_cost : int) (price : int) (num_buildings : int)= {
+  position = pos;
   name = name;
   color = color;
+  tile_type = tile_type;
   rent_no_house = rent_no_house;
   rent_1_house = rent_1_house;
   rent_2_house = rent_2_house;
@@ -40,10 +54,8 @@ let init_property
   rent_hotel = rent_hotel;
   building_cost = building_cost;
   price = price;
-  num_buildings = 0;
+  num_buildings = num_buildings;
 }
-
-(* let get_owner (property : t) = property.owner *)
 
 let get_name (property : t) : string = property.name 
 
@@ -64,6 +76,10 @@ let get_building_cost (property : t) : int = property.building_cost
 let get_price (property : t) : int = property.price
 
 let get_num_buildings (property : t) : int = property.num_buildings
+
+let get_type (property : t) : tile_type = property.tile_type
+
+let get_pos (property : t) : int = property.position
 
 let add_building property = 
   property.num_buildings <- property.num_buildings + 1
