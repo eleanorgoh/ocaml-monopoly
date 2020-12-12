@@ -16,6 +16,9 @@ let yellow = rgb 255 255 153
 let green = rgb 60 179 113
 let dark_blue = rgb 0 0 139
 let go_green = rgb 214 255 236
+let gray = rgb 120 120 120
+let dark_yellow = rgb 250 218 94
+let dark_go_green = rgb 180 230 202
 
 (* Other constants *)
 let header_height = 25
@@ -166,8 +169,8 @@ let draw_tax coord scale color =
   fill_rect x (y + 7 * scale) (6 * scale) (2 * scale);
   (* A *)
   fill_rect (x + 7 * scale) y (2 * scale) (5 * scale);
-  fill_rect (x + 9 * scale) y scale ( 2 * scale);
-  fill_rect (x + 9 * scale) (y + 3 * scale) scale (2 * scale);
+  fill_rect (x + 9 * scale) y scale (scale);
+  fill_rect (x + 9 * scale) (y + 4 * scale) scale (scale);
   fill_rect (x + 10 * scale) y (2 * scale) (8 * scale); 
   fill_rect (x + 7 * scale) (y + 6 * scale) (3 * scale) (2 * scale);
   (* X *)
@@ -185,10 +188,9 @@ let draw_tile_tax coord prop =
   let x = fst coord in 
   let y = snd coord in
   generic_light_green_tile coord prop;
-  draw_tax (x + 2 * padding - 1, y + sq_dim / 2 - 3 * 4 - 1) 3 red;
-  draw_tax (x + 2 * padding, y + sq_dim / 2 - 3 * 4) 3 black;
+  draw_tax (x + 2 * padding - 1, y + sq_dim / 2 - 9) 3 gray;
+  draw_tax (x + 2 * padding, y + sq_dim / 2 - 8) 3 black;
   draw_string_in_tile Center coord ("Pay $200") (sq_dim / 7) 8
-
 
 let render_player_pos player = failwith "TODO"
 (* Example animation
@@ -214,19 +216,38 @@ let draw_tile_utility coord prop =
     (sq_dim - sq_dim / 5) 15;
   draw_string_in_tile Center coord ("Price: $150") (sq_dim / 7) 8
 
+let draw_question_mark coord scale color = 
+  let x = fst coord in 
+  let y = snd coord in
+  set_color color; 
+  fill_rect x y (2 * scale) (2 * scale);
+  fill_rect x (y + 3 * scale) (2 * scale) (2 * scale);
+  fill_rect x (y + 5 * scale) (5 * scale) (2 * scale);
+  fill_rect (x + 3 * scale) (y + 7 * scale) (2 * scale) (3 * scale);
+  fill_rect (x - scale) (y + 10 * scale) (6 * scale) (2 * scale);
+  set_color black;
+  draw_rect x y (2 * scale) (2 * scale);
+  moveto x (y + 3 * scale); lineto x (y + 7 * scale); 
+  lineto (x + 3 * scale) (y + 7 * scale); 
+  lineto (x + 3 * scale) (y + 10 * scale); lineto (x - scale) (y + 10 * scale);
+  lineto (x - scale) (y + 12 * scale); lineto (x + 5 * scale) (y + 12 * scale);
+  lineto (x + 5 * scale) (y + 5 * scale); lineto (x + 2 * scale)(y + 5 * scale); 
+  lineto (x + 2 * scale) (y + 3 * scale); lineto x (y + 3 * scale)     
+
 let draw_tile_card coord prop = 
+  let x' = fst coord + 4 * padding + 3 in 
+  let y' = snd coord + 2 * padding - 3 in
   generic_light_green_tile coord prop;
   match Property.get_type prop with 
   | Chance_card -> 
-    draw_string_in_tile Center coord ("CHANCE CARD") 
-      (sq_dim - sq_dim / 5) 15;
-    draw_string_in_tile Center coord ("See card") 
-      (sq_dim / 7) 8
+    draw_string_in_tile Center coord ("CHANCE CARD") (sq_dim - sq_dim / 5) 15;
+    draw_question_mark (x' - 1, y' - 1) 4 black; 
+    draw_question_mark (x', y') 4 red
   | Community_chest -> 
     draw_string_in_tile Center coord ("COMMUNITY CHEST") 
       (sq_dim - sq_dim / 5) 15;
-    draw_string_in_tile Center coord ("See card") 
-      (sq_dim / 7) 8
+    draw_question_mark (x' - 1, y' - 1) 4 black; 
+    draw_question_mark (x', y') 4 light_blue
   | _ -> failwith "Cannot draw: Property is not a Chance or Community Card"
 
 let draw_tile_free_parking coord prop = 
@@ -292,8 +313,95 @@ let draw_board board =
     | _, _ -> failwith "Board size mismatch"
   in loop board coords
 
+let draw_M x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x y (3 * scale) (25 * scale);
+  fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 4 * scale) (y + 20 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 4 * scale) (y + 18 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 6 * scale) (y + 10 * scale) (3 * scale) (8 * scale);
+  fill_rect (x + 9 * scale) (y + 18 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 9 * scale) (y + 20 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 10 * scale) (y + 22 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 11 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
+
+let draw_O x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x y (15 * scale) (3 * scale);
+  fill_rect x y (3 * scale) (25 * scale);
+  fill_rect x (y + 22 * scale) (15 * scale) (3 * scale);
+  fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
+
+let draw_N x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x y (3 * scale) (25* scale);
+  fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 4 * scale) (y + 20 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 4 * scale) (y + 18 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 5 * scale) (y + 16 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 7 * scale) (y + 7 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 6 * scale) (y + 8 * scale) (3 * scale) (8 * scale);
+  fill_rect (x + 8 * scale) (y + 5 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 8 * scale) (y + 3 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 9 * scale) (y + 1 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 11 * scale) y (3 * scale) (2 * scale); 
+  fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
+
+let draw_P x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x (y + 10 * scale) (15 * scale) (3 * scale);
+  fill_rect x y (3 * scale) (25 * scale);
+  fill_rect x (y + 22 * scale) (15 * scale) (3 * scale);
+  fill_rect (x + 12 * scale) (y + 10 * scale) (3 * scale) (15 * scale)
+
+let draw_L x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x y (15 * scale) (3 * scale);
+  fill_rect x y (3 * scale) (25 * scale)
+
+let draw_Y x y color scale = 
+  set_color color; 
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
+  set_color white;
+  fill_rect x (y + 23 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 12 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 1 * scale) (y + 20 * scale) (3 * scale) (4 * scale); 
+  fill_rect (x + 11 * scale) (y + 20 * scale) (3 * scale) (4 * scale);
+  fill_rect (x + 2 * scale) (y + 16 * scale) (3 * scale) (4 * scale); 
+  fill_rect (x + 10 * scale) (y + 16 * scale) (3 * scale) (4 * scale);
+  fill_rect (x + 3 * scale) (y + 13 * scale) (3 * scale) (4 * scale); 
+  fill_rect (x + 9 * scale) (y + 13 * scale) (3 * scale) (4 * scale);
+  fill_rect (x + 4 * scale) (y + 12 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 8 * scale) (y + 12 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 5 * scale) (y + 11 * scale) (3 * scale) (2 * scale); 
+  fill_rect (x + 7 * scale) (y + 11 * scale) (3 * scale) (2 * scale);
+  fill_rect (x + 6 * scale) y (3 * scale) (13 * scale)
+
+let draw_centerpiece ctx cty = 
+  draw_M (ctx - 185) (cty + 100) red 2; 
+  draw_O (ctx - 135) (cty + 100) orange 2;
+  draw_N (ctx - 85) (cty + 100) dark_yellow 2;
+  draw_O (ctx - 35) (cty + 100) dark_go_green 2;
+  draw_P (ctx + 15) (cty + 100) green 2;
+  draw_O (ctx + 65) (cty + 100) light_blue 2; 
+  draw_L (ctx + 115) (cty + 100) dark_blue 2;
+  draw_Y (ctx + 165) (cty + 100) brown 2
+
 let () = init_window; 
-  try draw_board prop_lst_28;
+  try draw_board prop_lst_28; draw_centerpiece 400 400;
     let rec loop x y  = 
       let _ = wait_next_event [Poll] and wx' = size_x () and wy' = size_y ()
       in loop wx' wy'
