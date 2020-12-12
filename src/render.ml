@@ -301,15 +301,14 @@ let draw_letter_box_offset x y color scale =
 let alph_M x y color scale = 
   set_color color;
   fill_rect x y (3 * scale) (25 * scale);
-  fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 4 * scale) (y + 20 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 4 * scale) (y + 18 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 6 * scale) (y + 10 * scale) (3 * scale) (8 * scale);
-  fill_rect (x + 9 * scale) (y + 18 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 9 * scale) (y + 20 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 10 * scale) (y + 22 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 11 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
+  fill_poly [|(x, y + 20 * scale); 
+              (x + 3 * scale, y + 25 * scale); 
+              (x + 9 * scale, y + 15 * scale); 
+              (x + 6 * scale, y + 10 * scale)|];
+  fill_poly [|(x + 6 * scale, y + 10 * scale); 
+              (x + 9 * scale, y + 10 * scale);
+              (x + 15 * scale, y + 20 * scale);
+              (x + 12 * scale, y + 25 * scale)|];
   fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
 
 let draw_letter x y color scale alph_func = 
@@ -327,17 +326,10 @@ let alph_O x y color scale =
 let alph_N x y color scale = 
   set_color color; 
   fill_rect x y (3 * scale) (25* scale);
-  fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 4 * scale) (y + 20 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 4 * scale) (y + 18 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 5 * scale) (y + 16 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 7 * scale) (y + 7 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 6 * scale) (y + 8 * scale) (3 * scale) (8 * scale);
-  fill_rect (x + 8 * scale) (y + 5 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 8 * scale) (y + 3 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 9 * scale) (y + 1 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 11 * scale) y (3 * scale) (2 * scale); 
+  fill_poly [|(x, y + 20 * scale); 
+              (x + 3 * scale, y + 25 * scale); 
+              (x + 15 * scale, y + 5 * scale); 
+              (x + 12 * scale, y)|];
   fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
 
 let alph_P x y color scale = 
@@ -354,19 +346,14 @@ let alph_L x y color scale =
 
 let alph_Y x y color scale = 
   set_color color; 
-  fill_rect x (y + 23 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 12 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 1 * scale) (y + 20 * scale) (3 * scale) (4 * scale); 
-  fill_rect (x + 11 * scale) (y + 20 * scale) (3 * scale) (4 * scale);
-  fill_rect (x + 2 * scale) (y + 16 * scale) (3 * scale) (4 * scale); 
-  fill_rect (x + 10 * scale) (y + 16 * scale) (3 * scale) (4 * scale);
-  fill_rect (x + 3 * scale) (y + 13 * scale) (3 * scale) (4 * scale); 
-  fill_rect (x + 9 * scale) (y + 13 * scale) (3 * scale) (4 * scale);
-  fill_rect (x + 4 * scale) (y + 12 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 8 * scale) (y + 12 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 5 * scale) (y + 11 * scale) (3 * scale) (2 * scale); 
-  fill_rect (x + 7 * scale) (y + 11 * scale) (3 * scale) (2 * scale);
-  fill_rect (x + 6 * scale) y (3 * scale) (13 * scale)
+  fill_poly [|(x, (y + 25 * scale)); ((x + 4 * scale), (y + 25 * scale)); 
+              ((x + 10 * scale), (y + 13 * scale)); 
+              ((x + 6 * scale), (y + 13 * scale))|];
+  fill_poly [|((x + 5 * scale), (y + 13 * scale));
+              ((x + 9 * scale), (y + 13 * scale)); 
+              ((x + 15 * scale), (y + 25 * scale));
+              ((x + 11 * scale), (y + 25 * scale))|];
+  fill_rect (x + 6 * scale) y (3 * scale) (13 * scale) 
 
 let draw_monopoly_centerpiece ctx cty = 
   draw_letter (ctx + 165) (cty + 100) brown 2 alph_Y;
