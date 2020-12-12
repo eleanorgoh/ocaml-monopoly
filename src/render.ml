@@ -493,14 +493,14 @@ let draw_camel color trans_x trans_y scale =
   set_line_width 1
 
 let draw_camel_centerpiece = 
-  fill_camel red 276. 186. 0.50; 
-  fill_camel orange 276.5 186.5 0.50; 
-  fill_camel dark_yellow 277. 187. 0.50; 
-  fill_camel go_green 277.5 187.5 0.50; 
-  fill_camel green 278. 188. 0.50; 
-  fill_camel light_blue 278.5 188.5 0.50; 
-  fill_camel dark_blue 279. 189. 0.50; 
-  fill_camel brown 279.5 189.5 0.50; 
+  fill_camel red 274. 184. 0.50; 
+  fill_camel orange 274.75 184.75 0.50; 
+  fill_camel dark_yellow 275.5 185.5 0.50; 
+  fill_camel go_green 276.25 186.25 0.50; 
+  fill_camel green 277. 187. 0.50; 
+  fill_camel light_blue 277.75 187.75 0.50; 
+  fill_camel dark_blue 278.5 188.5 0.50; 
+  fill_camel brown 279.25 189.25 0.50; 
   fill_camel white 280. 190. 0.50;
   draw_camel black 280. 190. 0.50
 
