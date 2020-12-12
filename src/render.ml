@@ -292,31 +292,14 @@ let draw_jail coord prop =
 
 let draw_buildings prop = failwith "TODO"
 
-let draw_tile coord prop = match Property.get_type prop with 
-  | Property -> draw_tile_property coord prop
-  | Go -> draw_tile_go coord prop
-  | Railroad -> draw_tile_railroad coord prop
-  | Utility -> draw_tile_utility coord prop 
-  | Tax -> draw_tile_tax coord prop 
-  | Chance_card -> draw_tile_card coord prop
-  | Community_chest -> draw_tile_card coord prop
-  | Free_parking -> draw_tile_free_parking coord prop
-  | Go_to_jail -> draw_tile_go_to_jail coord prop
-  | In_jail_just_visiting -> draw_jail coord prop
-
-let draw_board board = 
-  let rec loop board coords = match board, coords with 
-    | [], [] -> () 
-    | h_board :: t_board, h_coords :: t_coords -> 
-      draw_tile h_coords h_board; draw_tile_outline h_coords; 
-      loop t_board t_coords 
-    | _, _ -> failwith "Board size mismatch"
-  in loop board coords
-
-let draw_M x y color scale = 
+let draw_letter_box_offset x y color scale = 
+  set_color black;
+  fill_rect (x - 5 * scale - 3) (y - 5 * scale - 3) (25 * scale) (35 * scale);
   set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
+  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale)
+
+let alph_M x y color scale = 
+  set_color color;
   fill_rect x y (3 * scale) (25 * scale);
   fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
   fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
@@ -329,19 +312,20 @@ let draw_M x y color scale =
   fill_rect (x + 11 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
   fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
 
-let draw_O x y color scale = 
-  set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
+let draw_letter x y color scale alph_func = 
+  draw_letter_box_offset x y color scale;
+  alph_func (x - 2) (y - 2) black scale;
+  alph_func x y white scale
+
+let alph_O x y color scale = 
+  set_color color;
   fill_rect x y (15 * scale) (3 * scale);
   fill_rect x y (3 * scale) (25 * scale);
   fill_rect x (y + 22 * scale) (15 * scale) (3 * scale);
   fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
 
-let draw_N x y color scale = 
+let alph_N x y color scale = 
   set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
   fill_rect x y (3 * scale) (25* scale);
   fill_rect (x + 2 * scale) (y + 23 * scale) (3 * scale) (2 * scale); 
   fill_rect (x + 3 * scale) (y + 22 * scale) (3 * scale) (2 * scale);
@@ -356,26 +340,20 @@ let draw_N x y color scale =
   fill_rect (x + 11 * scale) y (3 * scale) (2 * scale); 
   fill_rect (x + 12 * scale) y (3 * scale) (25 * scale)
 
-let draw_P x y color scale = 
+let alph_P x y color scale = 
   set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
   fill_rect x (y + 10 * scale) (15 * scale) (3 * scale);
   fill_rect x y (3 * scale) (25 * scale);
   fill_rect x (y + 22 * scale) (15 * scale) (3 * scale);
   fill_rect (x + 12 * scale) (y + 10 * scale) (3 * scale) (15 * scale)
 
-let draw_L x y color scale = 
+let alph_L x y color scale = 
   set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
   fill_rect x y (15 * scale) (3 * scale);
   fill_rect x y (3 * scale) (25 * scale)
 
-let draw_Y x y color scale = 
+let alph_Y x y color scale = 
   set_color color; 
-  fill_rect (x - 5 * scale) (y - 5 * scale) (25 * scale) (35 * scale);
-  set_color white;
   fill_rect x (y + 23 * scale) (3 * scale) (2 * scale); 
   fill_rect (x + 12 * scale) (y + 23 * scale) (3 * scale) (2 * scale);
   fill_rect (x + 1 * scale) (y + 20 * scale) (3 * scale) (4 * scale); 
@@ -390,18 +368,94 @@ let draw_Y x y color scale =
   fill_rect (x + 7 * scale) (y + 11 * scale) (3 * scale) (2 * scale);
   fill_rect (x + 6 * scale) y (3 * scale) (13 * scale)
 
-let draw_centerpiece ctx cty = 
-  draw_M (ctx - 185) (cty + 100) red 2; 
-  draw_O (ctx - 135) (cty + 100) orange 2;
-  draw_N (ctx - 85) (cty + 100) dark_yellow 2;
-  draw_O (ctx - 35) (cty + 100) dark_go_green 2;
-  draw_P (ctx + 15) (cty + 100) green 2;
-  draw_O (ctx + 65) (cty + 100) light_blue 2; 
-  draw_L (ctx + 115) (cty + 100) dark_blue 2;
-  draw_Y (ctx + 165) (cty + 100) brown 2
+let draw_monopoly_centerpiece ctx cty = 
+  draw_letter (ctx + 165) (cty + 100) brown 2 alph_Y;
+  draw_letter (ctx + 115) (cty + 100) dark_blue 2 alph_L;
+  draw_letter (ctx + 65) (cty + 100) light_blue 2 alph_O; 
+  draw_letter (ctx + 15) (cty + 100) green 2 alph_P;
+  draw_letter (ctx - 35) (cty + 100) dark_go_green 2 alph_O;
+  draw_letter (ctx - 85) (cty + 100) dark_yellow 2 alph_N;
+  draw_letter (ctx - 135) (cty + 100) orange 2 alph_O;
+  draw_letter (ctx - 185) (cty + 100) red 2 alph_M
+
+let draw_tile coord prop = match Property.get_type prop with 
+  | Property -> draw_tile_property coord prop
+  | Go -> draw_tile_go coord prop
+  | Railroad -> draw_tile_railroad coord prop
+  | Utility -> draw_tile_utility coord prop 
+  | Tax -> draw_tile_tax coord prop 
+  | Chance_card -> draw_tile_card coord prop
+  | Community_chest -> draw_tile_card coord prop
+  | Free_parking -> draw_tile_free_parking coord prop
+  | Go_to_jail -> draw_tile_go_to_jail coord prop
+  | In_jail_just_visiting -> draw_jail coord prop
+
+let camel_arr = 
+  [|(351, 356); (373, 372); (382, 407); (385, 438); (377, 445); 
+    (380, 452); (388, 451); (392, 447); (412, 457); (427, 459); (438, 455); 
+    (457, 457); (473, 451); (478, 439); (478, 430); (460, 422); (440, 403); 
+    (426, 360); (407, 318); (374, 288); (340, 277); (319, 273); (307, 248); 
+    (301, 233); (296, 215); (291, 198); (293, 188); (288, 166); (288, 139); 
+    (287, 120); (295, 109); (299, 98); (316, 87); (320, 76); (290, 71); 
+    (275, 92); (269, 107); (271, 138); (270, 159); (263, 171); (264, 186); 
+    (261, 199); (257, 186); (250, 171); (243, 148); (234, 135); (235, 113); 
+    (242, 105); (252, 102); (248, 94); (231, 90); (214, 93); (208, 103); 
+    (211, 113); (209, 120); (222, 155); (231, 186); (235, 200); (243, 223); 
+    (248, 242); (222, 240); (179, 253); (164, 259); (151, 260); (149, 243);
+    (139, 221); (123, 199); (124, 167); (134, 120); (151, 108); (163, 99); 
+    (157, 90); (125, 90); (120, 105); (115, 114); (117, 124); (94, 177); 
+    (101, 199); (102, 214); (101, 229); (97, 234); (91, 218); (62, 183); 
+    (55, 176); (59, 165); (50, 138); (50, 110); (60, 90); (69, 85); (69, 77); 
+    (37, 72); (30, 82); (28, 90); (32, 100); (30, 105); (33, 116); (32, 143); 
+    (33, 182); (46, 201); (54, 220); (58, 244); (56, 267); (62, 291); 
+    (68, 305); (69, 310); (67, 312); (62, 307); (54, 291); (48, 283); 
+    (36, 274); (27, 274); (30, 288); (41, 302); (53, 315); (69, 327); 
+    (82, 346); (99, 362); (118, 377); (126, 382); (134, 391); (147, 399); 
+    (158, 413); (171, 420); (197, 431); (215, 430); (237, 428); (252, 417); 
+    (262, 405); (265, 399); (281, 399); (296, 391); (315, 386); (328, 377); 
+    (343, 367)|]
+
+let transform_camel scale trans_x trans_y = Array.map 
+    (fun (x, y) -> 
+       (int_of_float (float_of_int x *. scale +. trans_x), 
+        int_of_float (float_of_int y *. scale +. trans_y))) camel_arr
+
+let fill_camel color trans_x trans_y scale = 
+  set_color color; 
+  let camel_arr_transformed = transform_camel scale trans_x trans_y in
+  fill_poly camel_arr_transformed
+
+let draw_camel color trans_x trans_y scale = 
+  set_color color; 
+  set_line_width 3;
+  let camel_arr_transformed = transform_camel scale trans_x trans_y in
+  draw_poly camel_arr_transformed;
+  set_line_width 1
+
+let draw_camel_centerpiece = 
+  fill_camel red 276. 186. 0.50; 
+  fill_camel orange 276.5 186.5 0.50; 
+  fill_camel dark_yellow 277. 187. 0.50; 
+  fill_camel go_green 277.5 187.5 0.50; 
+  fill_camel green 278. 188. 0.50; 
+  fill_camel light_blue 278.5 188.5 0.50; 
+  fill_camel dark_blue 279. 189. 0.50; 
+  fill_camel brown 279.5 189.5 0.50; 
+  fill_camel white 280. 190. 0.50;
+  draw_camel black 280. 190. 0.50
+
+let draw_board board = 
+  let rec loop board coords = match board, coords with 
+    | [], [] -> () 
+    | h_board :: t_board, h_coords :: t_coords -> 
+      draw_tile h_coords h_board; draw_tile_outline h_coords; 
+      loop t_board t_coords 
+    | _, _ -> failwith "Board size mismatch"
+  in loop board coords
 
 let () = init_window; 
-  try draw_board prop_lst_28; draw_centerpiece 400 400;
+  try draw_board prop_lst_28; draw_monopoly_centerpiece 400 400; 
+    draw_camel_centerpiece;
     let rec loop x y  = 
       let _ = wait_next_event [Poll] and wx' = size_x () and wy' = size_y ()
       in loop wx' wy'
