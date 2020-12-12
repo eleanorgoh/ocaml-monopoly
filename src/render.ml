@@ -4,7 +4,7 @@ open Property
 let init_window = 
   open_graph ""; 
   set_window_title "Monopoly"; 
-  resize_window 1000 800
+  resize_window 1000 801
 
 (* Preset colors *)
 let brown = rgb 139 69 19 
@@ -15,7 +15,7 @@ let red = rgb 220 20 60
 let yellow = rgb 255 255 153 
 let green = rgb 60 179 113
 let dark_blue = rgb 0 0 139
-let go_green = rgb 207 255 229
+let go_green = rgb 214 255 236
 
 (* Other constants *)
 let header_height = 25
@@ -36,21 +36,23 @@ let prop_1 = init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 0
 let prop_2 = init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 0
 let prop_3 = init_property 0 "Slope" Dark_Blue Property 0 1 2 3 4 5 1 1 0
 let prop_4 = init_property 0 "Line 92" Red Railroad 0 1 2 3 4 5 0 1 0
-let prop_5 = init_property 0 "Mac's" Brown Property 0 1 2 3 4 5 1 9999 0
-let prop_6 = init_property 0 "Terrace" Pink Property 1 1 1 1 1 1 1 9999 0
-let prop_7 = init_property 0 "Sage" Brown Property 1 1 1 1 1 1 1 10 0 
+let prop_5 = init_property 0 "Mac's" Red Property 0 1 2 3 4 5 1 9999 0
+let prop_6 = init_property 0 "Terrace" Pink Community_chest 1 1 1 1 1 1 1 9999 0
+let prop_7 = init_property 0 "Sage" Brown Go_to_jail 1 1 1 1 1 1 1 10 0 
 let prop_8 = init_property 
     0 "Expensive Rent" Green Property 9999 9999 9999 9999 9999 9999 9999 10 0
-let prop_9 = init_property 0 "Olin" Pink Property 1 1 1 1 1 1 1 10 0
+let prop_9 = init_property 0 "Olin" Pink Chance_card 1 1 1 1 1 1 1 10 0
 let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 0 
 
 let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
+let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
+let in_jail_prop = init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
 
 let prop_lst_28 = [
   go_prop; prop_0; prop_1; prop_2; prop_3; prop_4; prop_5; 
   prop_6; prop_7; prop_8; prop_9; prop_10; prop_0; prop_1; 
-  prop_2; prop_3; prop_4; prop_5; prop_6; prop_7; prop_8; 
-  prop_9; prop_10; prop_0; prop_1; prop_2; prop_3; prop_4
+  in_jail_prop; prop_3; prop_4; prop_5; tax_prop; prop_7; prop_8; 
+  prop_9; prop_10; prop_4; prop_1; prop_2; prop_3; prop_5
 ]
 
 let convert_color = function 
@@ -67,8 +69,7 @@ let convert_color = function
 let draw_tile_outline = function
   | (0, 0) | (0, 700) | (700, 700) | (700, 0) as tup -> 
     set_color black; draw_rect (fst tup) (snd tup) sq_dim sq_dim
-  | (x, y) -> set_color black; draw_rect x y sq_dim sq_dim; draw_rect x 
-      (y+sq_dim - header_height) sq_dim header_height
+  | (x, y) -> set_color black; draw_rect x y sq_dim sq_dim
 
 let fill_header c coord = 
   let fill_header c = 
@@ -94,6 +95,7 @@ let draw_string_in_tile pos coord str y_height size =
 
 let draw_tile_property coord prop = 
   let color = prop |> Property.get_color |> convert_color in 
+  set_color go_green; fill_rect (fst coord) (snd coord) sq_dim sq_dim;
   fill_header color coord;
   let prop_name = Property.get_name prop in 
   let price = prop |> Property.get_price |> string_of_int in 
@@ -106,14 +108,36 @@ let generic_light_green_tile coord prop =
   set_color black;
   draw_rect (fst coord) (snd coord) sq_dim sq_dim
 
+let draw_go coord scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  let x' = x + 2 in 
+  let y' = y + 2 in
+  let helper color x y = 
+    set_color color; 
+    fill_rect x y (scale*7) (scale*2);
+    fill_rect x (y+scale*2) (scale*2) (scale*5); 
+    fill_rect x (y+scale*7) (scale*7) (scale*2); 
+    fill_rect (x+scale*5) (y+scale*2) (scale*2) (scale*1); 
+    fill_rect (x+scale*3) (y+scale*3) (scale*4) (scale*2); 
+    fill_rect (x+scale*9) y (scale*7) (scale*2);
+    fill_rect (x+scale*9) (y+scale*7) (scale*7) (scale*2);
+    fill_rect (x+scale*9) (y+scale*2) (scale*2) (scale*5);
+    fill_rect (x+scale*14) (y+scale*2) (scale*2) (scale*5)
+  in 
+  helper black x y; helper red x' y'
+
 let draw_tile_go coord prop = 
+  let x = fst coord in 
+  let y = snd coord in
   generic_light_green_tile coord prop;
-  draw_string_in_tile Center coord "GO" (sq_dim / 2) 45;
+  draw_go (x + sq_dim / 2 - 3 * 8, y + sq_dim / 2 - 3 * 4) 3;
   draw_string_in_tile Center coord "Collect $200" (sq_dim / 7) 8
 
 let draw_train coord scale = 
   let x = fst coord in 
   let y = snd coord in 
+  set_color black;
   fill_poly [|(x, y); (x+scale*3, y); (x+scale*3, y+scale*6)|];
   fill_poly [|(x+scale*2, y+scale*14); (x+scale*6, y+scale*14); 
               (x+scale*4, y+scale*8)|];
@@ -133,7 +157,40 @@ let draw_tile_railroad coord prop =
   draw_string_in_tile Center coord ("RR: "^rr_name) (sq_dim - sq_dim / 5) 15;
   draw_string_in_tile Center coord ("Price: $"^price) (sq_dim / 7) 8
 
-let anim_player_pos player = failwith "TODO"
+let draw_tax coord scale color = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color; 
+  (* T *)
+  fill_rect (x + 2 * scale) y (2 * scale) (7 * scale); 
+  fill_rect x (y + 7 * scale) (6 * scale) (2 * scale);
+  (* A *)
+  fill_rect (x + 7 * scale) y (2 * scale) (5 * scale);
+  fill_rect (x + 9 * scale) y scale ( 2 * scale);
+  fill_rect (x + 9 * scale) (y + 3 * scale) scale (2 * scale);
+  fill_rect (x + 10 * scale) y (2 * scale) (8 * scale); 
+  fill_rect (x + 7 * scale) (y + 6 * scale) (3 * scale) (2 * scale);
+  (* X *)
+  fill_rect (x + 13 * scale) y (2 * scale) (2 * scale);
+  fill_rect (x + 13 * scale) (y + 6 * scale) (2 * scale) (2 * scale);
+  fill_rect (x + 14 * scale) (y + scale) (2 * scale) (2 * scale);
+  fill_rect (x + 14 * scale) (y + 5 * scale) (2 * scale) (2 * scale);
+  fill_rect (x + 16 * scale) (y + 3 * scale) (2 * scale) (2 * scale);
+  fill_rect (x + 18 * scale) (y + scale) (2 * scale) (2 * scale);
+  fill_rect (x + 18 * scale) (y + 5 * scale) (2 * scale) (2 * scale);
+  fill_rect (x + 19 * scale) y (2 * scale) (2 * scale);
+  fill_rect (x + 19 * scale) (y + 6 * scale) (2 * scale) (2 * scale)
+
+let draw_tile_tax coord prop = 
+  let x = fst coord in 
+  let y = snd coord in
+  generic_light_green_tile coord prop;
+  draw_tax (x + 2 * padding - 1, y + sq_dim / 2 - 3 * 4 - 1) 3 red;
+  draw_tax (x + 2 * padding, y + sq_dim / 2 - 3 * 4) 3 black;
+  draw_string_in_tile Center coord ("Pay $200") (sq_dim / 7) 8
+
+
+let render_player_pos player = failwith "TODO"
 (* Example animation
 
    let move_rect pos size speed n =
@@ -151,25 +208,86 @@ let anim_player_pos player = failwith "TODO"
       move_aux nx ny n_speed (n-1)
    in move_aux x y speed n *)
 
+let draw_tile_utility coord prop = 
+  generic_light_green_tile coord prop; 
+  draw_string_in_tile Center coord ("Water and Electricity") 
+    (sq_dim - sq_dim / 5) 15;
+  draw_string_in_tile Center coord ("Price: $150") (sq_dim / 7) 8
+
+let draw_tile_card coord prop = 
+  generic_light_green_tile coord prop;
+  match Property.get_type prop with 
+  | Chance_card -> 
+    draw_string_in_tile Center coord ("CHANCE CARD") 
+      (sq_dim - sq_dim / 5) 15;
+    draw_string_in_tile Center coord ("See card") 
+      (sq_dim / 7) 8
+  | Community_chest -> 
+    draw_string_in_tile Center coord ("COMMUNITY CHEST") 
+      (sq_dim - sq_dim / 5) 15;
+    draw_string_in_tile Center coord ("See card") 
+      (sq_dim / 7) 8
+  | _ -> failwith "Cannot draw: Property is not a Chance or Community Card"
+
+let draw_tile_free_parking coord prop = 
+  generic_light_green_tile coord prop;
+  draw_string_in_tile Center coord ("FREE PARKING") 
+    (sq_dim - sq_dim / 5) 15
+
+let draw_tile_go_to_jail coord prop = 
+  generic_light_green_tile coord prop;
+  draw_string_in_tile Center coord ("GO TO JAIL") (sq_dim - sq_dim / 5) 15
+
+let draw_jail_cell coord scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color white; 
+  set_line_width 2;
+  fill_rect x y (scale * 40) (scale * 20);
+  set_color black;
+  moveto (x + 4 * scale) y; lineto (x + 4 * scale) (y + scale * 20); 
+  moveto (x + 8 * scale) y; lineto (x + 8 * scale) (y + scale * 20); 
+  moveto (x + 12 * scale) y; lineto (x + 12 * scale) (y + scale * 20); 
+  moveto (x + 16 * scale) y; lineto (x + 16 * scale) (y + scale * 20); 
+  moveto (x + 20 * scale) y; lineto (x + 20 * scale) (y + scale * 20); 
+  moveto (x + 24 * scale) y; lineto (x + 24 * scale) (y + scale * 20); 
+  moveto (x + 28 * scale) y; lineto (x + 28 * scale) (y + scale * 20); 
+  moveto (x + 32 * scale) y; lineto (x + 32 * scale) (y + scale * 20); 
+  moveto (x + 36 * scale) y; lineto (x + 36 * scale) (y + scale * 20);
+  draw_rect x y (scale * 40) (scale * 20);
+  set_line_width 1
+
+let draw_jail coord prop = 
+  let x = fst coord in 
+  let y = snd coord in
+  generic_light_green_tile coord prop;
+  set_color red;
+  fill_rect x y sq_dim (sq_dim - header_height);
+  set_color black;
+  draw_tile_outline (x, y);
+  draw_rect x (y + sq_dim - header_height) sq_dim header_height;
+  draw_jail_cell (x + padding, y + padding) 2;
+  draw_string_in_tile Center coord ("IN JAIL") (14 * sq_dim / 25) 15
+
 let draw_buildings prop = failwith "TODO"
 
 let draw_tile coord prop = match Property.get_type prop with 
   | Property -> draw_tile_property coord prop
   | Go -> draw_tile_go coord prop
   | Railroad -> draw_tile_railroad coord prop
-  | Utility -> failwith "TODO"
-  | Tax -> failwith "TODO"
-  | Chance_card -> failwith "TODO"
-  | Community_chest -> failwith "TODO"
-  | Free_parking -> failwith "TODO"
-  | Go_to_jail -> failwith "TODO"
-  | In_jail_just_visiting -> failwith "TODO"
+  | Utility -> draw_tile_utility coord prop 
+  | Tax -> draw_tile_tax coord prop 
+  | Chance_card -> draw_tile_card coord prop
+  | Community_chest -> draw_tile_card coord prop
+  | Free_parking -> draw_tile_free_parking coord prop
+  | Go_to_jail -> draw_tile_go_to_jail coord prop
+  | In_jail_just_visiting -> draw_jail coord prop
 
 let draw_board board = 
   let rec loop board coords = match board, coords with 
     | [], [] -> () 
     | h_board :: t_board, h_coords :: t_coords -> 
-      draw_tile_outline h_coords; draw_tile h_coords h_board; 
+      draw_tile h_coords h_board; draw_tile_outline h_coords; 
       loop t_board t_coords 
     | _, _ -> failwith "Board size mismatch"
   in loop board coords
