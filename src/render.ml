@@ -50,12 +50,14 @@ let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 0
 let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
 let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
 let in_jail_prop = init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
+let free_parking_prop = init_property 1 "GO" Light_Blue Free_parking 0 1 2 3 4 5 10 20 0
+let utility_prop = init_property 1 "GO" Light_Blue Utility 0 1 2 3 4 5 10 20 0
 
 let prop_lst_28 = [
   go_prop; prop_0; prop_1; prop_2; prop_3; prop_4; prop_5; 
-  prop_6; prop_7; prop_8; prop_9; prop_10; prop_0; prop_1; 
+  prop_6; utility_prop; prop_8; prop_9; prop_10; prop_0; prop_1; 
   in_jail_prop; prop_3; prop_4; prop_5; tax_prop; prop_7; prop_8; 
-  prop_9; prop_10; prop_4; prop_1; prop_2; prop_3; prop_5
+  prop_9; free_parking_prop; prop_4; prop_1; prop_2; prop_3; prop_5
 ]
 
 let convert_color = function 
@@ -174,15 +176,12 @@ let draw_tax coord scale color =
   fill_rect (x + 10 * scale) y (2 * scale) (8 * scale); 
   fill_rect (x + 7 * scale) (y + 6 * scale) (3 * scale) (2 * scale);
   (* X *)
-  fill_rect (x + 13 * scale) y (2 * scale) (2 * scale);
-  fill_rect (x + 13 * scale) (y + 6 * scale) (2 * scale) (2 * scale);
-  fill_rect (x + 14 * scale) (y + scale) (2 * scale) (2 * scale);
-  fill_rect (x + 14 * scale) (y + 5 * scale) (2 * scale) (2 * scale);
-  fill_rect (x + 16 * scale) (y + 3 * scale) (2 * scale) (2 * scale);
-  fill_rect (x + 18 * scale) (y + scale) (2 * scale) (2 * scale);
-  fill_rect (x + 18 * scale) (y + 5 * scale) (2 * scale) (2 * scale);
-  fill_rect (x + 19 * scale) y (2 * scale) (2 * scale);
-  fill_rect (x + 19 * scale) (y + 6 * scale) (2 * scale) (2 * scale)
+  fill_poly [|(x + 13 * scale, y + 6 * scale); (x + 13 * scale, y + 8 * scale);
+              (x + 15 * scale, y + 8 * scale); (x + 21 * scale, y + 2 * scale);
+              (x + 21 * scale, y); (x + 19 * scale, y);|];
+  fill_poly [|(x + 15 * scale, y); (x + 13 * scale, y);
+              (x + 13 * scale, y + 2 * scale); (x + 19 * scale, y + 8 * scale);
+              (x + 21 * scale, y + 8 * scale); (x + 21 * scale, y + 6 * scale)|]
 
 let draw_tile_tax coord prop = 
   let x = fst coord in 
@@ -210,10 +209,28 @@ let render_player_pos player = failwith "TODO"
       move_aux nx ny n_speed (n-1)
    in move_aux x y speed n *)
 
+let draw_lightning coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y); (x + 3 * scale, y + 6 * scale); 
+              (x + scale, y + 6 * scale); (x + 3 * scale, y + 9 * scale);
+              (x + 7 * scale, y + 9 * scale); (x + 4 * scale, y + 7 * scale);
+              (x + 7 * scale, y + 7 * scale);|];
+  set_color black;
+  draw_poly [|(x, y); (x + 3 * scale, y + 6 * scale); 
+              (x + scale, y + 6 * scale); (x + 3 * scale, y + 9 * scale);
+              (x + 7 * scale, y + 9 * scale); (x + 4 * scale, y + 7 * scale);
+              (x + 7 * scale, y + 7 * scale);|]
+
 let draw_tile_utility coord prop = 
+  let x = fst coord in 
+  let y = snd coord in 
   generic_light_green_tile coord prop; 
-  draw_string_in_tile Center coord ("Water and Electricity") 
+  draw_string_in_tile Center coord ("Utilities") 
     (sq_dim - sq_dim / 5) 15;
+  draw_lightning (x + sq_dim / 3 - 2, y + sq_dim / 3 - 2) black 4;
+  draw_lightning (x + sq_dim / 3, y + sq_dim / 3) yellow 4;
   draw_string_in_tile Center coord ("Price: $150") (sq_dim / 7) 8
 
 let draw_question_mark coord scale color = 
@@ -250,14 +267,50 @@ let draw_tile_card coord prop =
     draw_question_mark (x', y') 4 light_blue
   | _ -> failwith "Cannot draw: Property is not a Chance or Community Card"
 
+let draw_car coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  (* Draw body of car *)
+  set_color color;
+  fill_poly [|(x, y); (x, y + 3 * scale); (x + 2 * scale, y + 3 * scale); 
+              (x + 5 * scale, y + 6 * scale); (x + 9 * scale, y + 6 * scale);
+              (x + 12 * scale, y + 3 * scale); (x + 15 * scale, y + 3 * scale);
+              (x + 15 * scale, y)|];
+  set_color black;
+  draw_poly [|(x, y); (x, y + 3 * scale); (x + 2 * scale, y + 3 * scale); 
+              (x + 5 * scale, y + 6 * scale); (x + 9 * scale, y + 6 * scale);
+              (x + 12 * scale, y + 3 * scale); (x + 15 * scale, y + 3 * scale);
+              (x + 15 * scale, y)|];
+  (* Tires *)
+  set_color gray;
+  fill_circle (x + 4 * scale) y scale; fill_circle (x + 10 * scale) y scale;
+  set_color black;
+  draw_circle (x + 4 * scale) y scale; draw_circle (x + 10 * scale) y scale;
+  (* Windows and lights *)
+  set_color red;
+  fill_rect x (y + scale) (2 * scale) scale; 
+  set_color yellow;
+  fill_rect (x + 14 * scale) (y + scale) scale scale;
+  set_color light_blue;
+  fill_poly [|(x + 3 * scale, y + 3 * scale); (x + 5 * scale, y + 5 * scale);
+              (x + 7 * scale, y + 5 * scale); (x + 7 * scale, y + 3 * scale)|];
+  fill_poly [|(x + 8 * scale, y + 3 * scale); (x + 8 * scale, y + 5 * scale);
+              (x + 9 * scale, y + 5 * scale); (x + 11 * scale, y + 3 * scale)|];
+  set_color black;
+  draw_rect x (y + scale) (2 * scale) scale; 
+  draw_rect (x + 14 * scale) (y + scale) scale scale;
+  draw_poly [|(x + 3 * scale, y + 3 * scale); (x + 5 * scale, y + 5 * scale);
+              (x + 7 * scale, y + 5 * scale); (x + 7 * scale, y + 3 * scale)|];
+  draw_poly [|(x + 8 * scale, y + 3 * scale); (x + 8 * scale, y + 5 * scale);
+              (x + 9 * scale, y + 5 * scale); (x + 11 * scale, y + 3 * scale)|]
+
 let draw_tile_free_parking coord prop = 
+  let x = fst coord in 
+  let y = snd coord in
   generic_light_green_tile coord prop;
   draw_string_in_tile Center coord ("FREE PARKING") 
-    (sq_dim - sq_dim / 5) 15
-
-let draw_tile_go_to_jail coord prop = 
-  generic_light_green_tile coord prop;
-  draw_string_in_tile Center coord ("GO TO JAIL") (sq_dim - sq_dim / 5) 15
+    (sq_dim - sq_dim / 5) 15;
+  draw_car (x + sq_dim / 5, y + sq_dim / 3) orange 4 
 
 let draw_jail_cell coord scale = 
   let x = fst coord in 
@@ -277,6 +330,26 @@ let draw_jail_cell coord scale =
   moveto (x + 36 * scale) y; lineto (x + 36 * scale) (y + scale * 20);
   draw_rect x y (scale * 40) (scale * 20);
   set_line_width 1
+
+let draw_arrow coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y); (x, y + 2 * scale); (x + 4 * scale, y + 2 * scale); 
+              (x + 4 * scale, y + 3 * scale); (x + 6 * scale, y + scale); 
+              (x + 4 * scale, y - scale); (x + 4 * scale, y)|];
+  set_color black;
+  draw_poly [|(x, y); (x, y + 2 * scale); (x + 4 * scale, y + 2 * scale); 
+              (x + 4 * scale, y + 3 * scale); (x + 6 * scale, y + scale); 
+              (x + 4 * scale, y - scale); (x + 4 * scale, y)|]
+
+let draw_tile_go_to_jail coord prop = 
+  let x = fst coord in 
+  let y = snd coord in
+  generic_light_green_tile coord prop;
+  draw_string_in_tile Center coord ("GO TO JAIL") (sq_dim - sq_dim / 5) 15;
+  draw_arrow (x + sq_dim / 3 + sq_dim / 15, y + 3 * sq_dim / 5) red 4;
+  draw_jail_cell (x + padding, y + padding) 2
 
 let draw_jail coord prop = 
   let x = fst coord in 
