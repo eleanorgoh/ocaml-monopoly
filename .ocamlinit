@@ -1,3 +1,4 @@
 #require "yojson";;
 #require "graphics";;
+#require "ANSITerminal";;
 #directory "_build";;
