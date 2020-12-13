@@ -2,6 +2,7 @@
 Manual install:
 1. OCaml Graphics: Run `opam install graphics`. Make sure you have XQuartz (Check 3110 page for instructions).
 2. Yojson: Run `opam install yojson`. 
+3. ANSITerminal: Run `opam install ANSIterminal`.
 
 # How to install and build Monopoly: 
 
