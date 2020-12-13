@@ -14,6 +14,7 @@ type t = {
   name : string;
   action : action;
 }
+
 let init_card ctg name act = {
   category = ctg;
   name = name;
