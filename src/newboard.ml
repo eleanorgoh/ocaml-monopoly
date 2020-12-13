@@ -10,7 +10,7 @@ let match_color (str : string) : Property.color =
   | "Light Blue" -> Property.Light_Blue
   | "Pink" -> Property.Pink
   | "Orange" -> Property.Orange
-  | "Red " -> Property.Red
+  | "Red" -> Property.Red
   | "Yellow" -> Property.Yellow
   | "Green" -> Property.Green
   | "Dark Blue" -> Property.Dark_Blue
@@ -22,7 +22,7 @@ let match_type (str : string) : Property.tile_type =
   | "Railroad" -> Property.Railroad
   | "Utility" -> Property.Utility
   | "Tax" -> Property.Tax
-  | "Chance Card " -> Property.Chance_card
+  | "Chance Card" -> Property.Chance_card
   | "Community Chest" -> Property.Community_chest
   | "Free Parking" -> Property.Free_parking
   | "Go To Jail" -> Property.Go_to_jail
@@ -60,7 +60,7 @@ let tile_json (j : Yojson.Basic.t) =
     let pos = j |> member "position" |> to_int in
     let color = Property.No_Color in
     let name = j |> member "name" |> to_string in
-    let r = j |> member "rent" |> to_int in
+    let r = j |> member "rent_no_house" |> to_int in
     let p = j |> member "price" |> to_int in
     Property.init_property pos name color tile_type 0 0 0 0 0 r 0 p 5
   | Tax ->
@@ -74,7 +74,7 @@ let tile_json (j : Yojson.Basic.t) =
   | Free_parking
   | Go_to_jail
   | In_jail_just_visiting
-  | Go->
+  | Go ->
     let pos = j |> member "position" |> to_int in
     let name = j |> member "name" |> to_string in
     let color = Property.No_Color in

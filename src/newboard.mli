@@ -7,7 +7,7 @@
 *)
 
 (** The abstract type of values representing the board. *)
-type t
+type t = Property.t list
 
 (** [from_json j] is the board that [j] represents.
     Requires: [j] is a valid JSON board representation. *)
