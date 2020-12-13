@@ -1,10 +1,12 @@
 
 (* Properties may be bought in one of 3 ways: landing on the property space 
    and buying it, being the highest bidder in an auction for property, 
-   or buy it from an opponent in a trade. Properties may also be received from bankrupted players, provided the Bank didn't bankrupt them.
+   or buy it from an opponent in a trade. Properties may also be received from 
+   bankrupted players, provided the Bank didn't bankrupt them.
 
    When a player buys or otherwise gains possession of a property, he or she
-   receives the property's corresponding title deed, which lists all relevant information on the property.
+   receives the property's corresponding title deed, which lists all relevant 
+   information on the property.
 
    When a player owns all the properties in a color group (or 2/3 to 3/4 in the 
    mega version), she or he is said to have a monopoly, which allows the player
