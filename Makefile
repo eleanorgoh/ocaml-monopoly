@@ -21,6 +21,9 @@ command-test:
 card-test:
 	$(OCAMLBUILD) -tag 'debug' src/card_test.byte && ./card_test.byte
 
+graphics:
+	ocamlbuild -use-ocamlfind -pkg graphics src/render.native --
+
 check:
 	bash checkenv.sh
 
