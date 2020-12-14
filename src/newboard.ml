@@ -97,7 +97,7 @@ let get_name (board : t) (position : int) : string =
   let tile = get_tile board position in get_name tile
 
 let get_names (board : t) : string list = 
-  List.map (fun x -> Property.get_name) board
+  List.map (fun x -> Property.get_name x) board
 
 let get_color (board : t) (position : int) : color = 
   let tile = get_tile board position in get_color tile

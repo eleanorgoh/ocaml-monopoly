@@ -19,6 +19,9 @@ val get_tile : t -> int -> Property.t
 (** [get_name board position] is the name for the tile at [position]. *)
 val get_name : t -> int -> string
 
+(** [get_names board] is the list of names of all the tiles. *)
+val get_names : t -> string list
+
 (** [get_type board position] is the type for the tile at [position]. *)
 val get_type : t -> int -> Property.tile_type
 
