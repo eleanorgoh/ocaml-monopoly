@@ -79,3 +79,7 @@ val get_pos : t -> int
 (** [add_building prop] is [property] after adding a new building. 
     Requires: property has less than 5 buildings.*)
 val add_building : t -> unit
+
+(** [reset_property prop] is [property] at it's default state with no buildings
+    on it. *)
+val reset_property : t -> t
