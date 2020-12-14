@@ -19,6 +19,12 @@ val init_state : Newboard.t -> (string * string) list ->  t
     is on. *)
 val current_pos : t -> string -> int
 
+(** [player_stat game] is the stat summary of the current player of the game. *)
+val player_stat : t -> string -> int
+
+(** [player_stat game] is the name the tile that the current player is on.*)
+val current_tile : t -> string
+
 (** [get_winner game] is the winner of the game if there is one.*)
 val winner : t -> Player.t option
 
