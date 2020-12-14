@@ -47,3 +47,13 @@ let set_name p name = {p with name = name}
 let set_money p amt = p.money <- amt
 
 let set_marker_type p marker = {p with marker = marker}
+
+let rec string_helper property_lst result=
+  match property_lst with 
+  | [] -> result 
+  | h::t -> string_helper t (Property.get_name h ^ ", "  ^ result)
+
+let player_to_string p = 
+  "Player " ^ p.name ^ " (marker: " ^ p.marker ^ " ) has a balance of $" ^ 
+  string_of_int p.money ^ ". They own the following properties: " ^ string_helper 
+    (List.tl p.properties) (Property.get_name (List.hd p.properties)) ^ "."

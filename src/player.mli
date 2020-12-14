@@ -42,3 +42,6 @@ val set_money : t -> int -> unit
 (** [set_marker_type p marker] sets the marker type of player [p] 
     to [marker]. *)
 val set_marker_type : t -> string -> t
+
+(** [player_to_string p] is the string representatin of player [p]. *)
+val player_to_string : t -> string
