@@ -8,6 +8,8 @@ type state = {
   num_rolls : int;
 }
 
+type t = state
+
 let create_card (category : Cc_card.category) (board : Newboard.t)= 
   let names = Newboard.get_names board in 
   let x = Random.int (List.length names) in
@@ -27,21 +29,26 @@ let rec create_card_stack
   | _ -> let card = create_card category board in 
     create_card_stack category board (card::lst) (count - 1)
 
-let init_state (players : Player.t list) (board : Newboard.t) = {
-  players = List.map (fun x -> (x,0)) players;
-  board = board;
-  chance_stack = create_card_stack Cc_card.Chance board [] 16;
-  community_stack = create_card_stack Cc_card.Community board [] 16;
-  num_rolls = 0;
-}
+let create_players (lst : (string * string) list) = 
+  List.map (fun (x,y) -> Player.init_new_player x y) lst
 
-let rec pos_helper name players = 
+let init_state (board : Newboard.t) (players : (string * string) list) =
+  let instantiate_players = create_players players in 
+  {
+    players = List.map (fun x -> (x,0)) instantiate_players;
+    board = board;
+    chance_stack = create_card_stack Cc_card.Chance board [] 16;
+    community_stack = create_card_stack Cc_card.Community board [] 16;
+    num_rolls = 0;
+  }
+
+let rec pos_helper name players : int = 
   match players with
   | [] -> failwith "Could not find player."
   | h::t -> if Player.get_name (fst h) = name then snd h 
     else pos_helper name t
 
-let current_pos name state = pos_helper name state.players
+let current_pos state name = pos_helper name state.players
 
 let rec count_balances count players = 
   match players with
@@ -61,11 +68,12 @@ let winner state =
 
 let player_stat state = Player.player_to_string (fst (List.hd state.players))
 
-let current_tile state board = 
+let current_tile state = 
   let player_pos = snd (List.hd state.players) in 
-  "Currently you are on: " ^ Property.get_name (List.nth board player_pos) ^ "." 
+  "Currently you are on: " ^ Property.get_name (List.nth state.board player_pos)
+  ^ "." 
 
-let valid_command (command : Command.t) state = 
+let valid_command state (command : Command.t) = 
   match command with 
   | End_Turn ->  true
   | Forfeit -> true
@@ -90,10 +98,10 @@ let valid_command (command : Command.t) state =
   | Collect (s1, s2, s3) -> failwith "Unimplemented collect"
   | _ -> failwith "Command should not have been run/DNE."
 
-let rec options_helper state lst str = 
+let rec options_helper state (lst : Command.t list) str = 
   match lst with 
   | [] -> str 
-  | h::t -> if valid_command h state 
+  | h::t -> if valid_command state h
     then options_helper state t (Command.to_string h ^ " " ^ str) 
     else options_helper state t str
 
@@ -113,7 +121,7 @@ let rec tile_pos board tile_name : int=
   | h::t -> if Property.get_name h = tile_name
     then Property.get_pos h else tile_pos t tile_name
 
-let rec handle_command (command : Command.t) state = 
+let rec handle_command state (command : Command.t)  = 
   match command with 
   | End_Turn ->
     let curr_player = List.hd state.players in 

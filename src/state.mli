@@ -20,7 +20,7 @@ val init_state : Newboard.t -> (string * string) list ->  t
 val current_pos : t -> string -> int
 
 (** [player_stat game] is the stat summary of the current player of the game. *)
-val player_stat : t -> string -> int
+val player_stat : t -> string
 
 (** [player_stat game] is the name the tile that the current player is on.*)
 val current_tile : t -> string
