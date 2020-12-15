@@ -87,3 +87,19 @@ let parse str =
   let str_lst = split_str lowercase_str in match str_lst with 
   | [] -> raise (Unparsable "Please enter a non-empty command.")
   | h :: t -> create_command str_lst
+
+let to_string commmand = 
+  match commmand with 
+  | Start -> "Start"
+  | Quit -> "Quit"
+  | Restart -> "Restart"
+  | End_Turn -> "End turn"
+  | Forfeit -> "Forfeit"
+  | Player_Name s -> "Create player: " ^ s
+  | Roll -> "Roll"
+  | Draw_Chance -> "Draw a chance card"
+  | Draw_Community -> "Draw a commmunity chest card"
+  | Buy s  -> "Buy " ^ s
+  | Sell s  -> "Sell " ^ s
+  | Collect (s1, s2, s3) -> s1 ^ " is collecting " ^ s3 ^ " from " ^ s2
+  | Help -> "Help"
