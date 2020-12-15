@@ -15,6 +15,8 @@ type t
     of $1500. No player owns any properties. *)
 val init_state : Newboard.t -> (string * string) list ->  t
 
+val get_player_pos : t -> (string * int) list
+
 (** [current_pos game name] is the position of the board that the player's piece 
     is on. *)
 val current_pos : t -> string -> int

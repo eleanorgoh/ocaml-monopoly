@@ -1,7 +1,5 @@
-type pos = int
-
 type state = {
-  players : (Player.t * pos) list;
+  players : (Player.t * int) list;
   board : Newboard.t;
   chance_stack : Cc_card.t list;
   community_stack : Cc_card.t list;
@@ -9,6 +7,10 @@ type state = {
 }
 
 type t = state
+
+let get_player_pos state : (string * int) list = 
+  let players = state.players in 
+  List.map (fun (x,y) -> (Player.get_name x, y)) players
 
 let create_card (category : Cc_card.category) (board : Newboard.t)= 
   let names = Newboard.get_names board in 
