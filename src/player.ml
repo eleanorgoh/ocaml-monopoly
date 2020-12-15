@@ -3,6 +3,7 @@ type t = {
   mutable money : int;
   properties : Property.t list;
   marker : string;
+  jail_card : bool;
 }
 
 let init_new_player name marker = {
@@ -10,6 +11,7 @@ let init_new_player name marker = {
   money = 1500;
   properties = [];
   marker = marker;
+  jail_card = false;
 }
 
 exception UpdateError of string 
@@ -17,6 +19,8 @@ exception UpdateError of string
 let get_name p = p.name 
 
 let get_money p = p.money
+
+let has_jail_card p = p.jail_card
 
 let get_marker_type p = p.marker
 
@@ -31,6 +35,14 @@ let get_property_by_name p name =
       else rec_find_property t
   in 
   rec_find_property property_lst
+
+let receive_jail_card p = 
+  {p with jail_card = true}
+
+let use_jail_card p = 
+  if p.jail_card 
+  then {p with jail_card = false}
+  else failwith "Does not have jail card"
 
 let add_property p prop = 
   if not (List.mem prop p.properties) then {p with properties = 

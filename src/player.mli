@@ -13,6 +13,9 @@ val get_name : t -> string
 (** [get_money p] is the amount of money of player [p]. *)
 val get_money : t -> int
 
+(** [has_jail_card p] checks if player [p] has a get out of jail card. *)
+val has_jail_card : t -> bool
+
 (** [get_marker_type p] is the marker type of player [p]. *)
 val get_marker_type : t -> string
 
@@ -22,6 +25,12 @@ val get_properties : t -> Property.t list
 (** [get_property_by_name p name] is Some property owned by player [p]
     with name [name] if [p] owns this property. Otherwise, None. *)
 val get_property_by_name : t -> string -> Property.t option
+
+(** [receive_jail_card p] is the Player [p] receiving a get out of jail card. *)
+val receive_jail_card : t -> t
+
+(** [use_jail_card p] is the Player [p] using their get out of jail card. *)
+val use_jail_card : t -> t
 
 (** [add_property p prop] is the player after adding property [prop] to the 
     player [p]'s list of properties if [p] does not own [prop] and UpdateError 
@@ -45,3 +54,4 @@ val set_marker_type : t -> string -> t
 
 (** [player_to_string p] is the string representatin of player [p]. *)
 val player_to_string : t -> string
+
