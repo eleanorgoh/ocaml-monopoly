@@ -65,52 +65,61 @@ let current_tile state board =
   let player_pos = snd (List.hd state.players) in 
   "Currently you are on: " ^ Property.get_name (List.nth board player_pos) ^ "." 
 
-let view_options state = failwith ""
-
 let valid_command (command : Command.t) state = 
   match command with 
   | End_Turn ->  true
-  | Forfeit -> failwith ""
-  | Roll -> failwith ""
-  | Buy s -> failwith ""
-  | Sell s -> failwith ""
-  | Collect (s1, s2, s3) -> failwith ""
+  | Forfeit -> true
+  | Roll -> if state.num_rolls = 0 then true else false
+  | Buy s -> 
+    let player = fst (List.hd state.players) in 
+    let pos = snd (List.hd state.players) in 
+    let property = List.nth state.board pos in 
+    if Property.get_num_buildings property < 5 
+    && Property.get_name property = s
+    && Property.get_price property <= Player.get_money player
+    then true else false
+  | Sell s -> 
+    let player = fst (List.hd state.players) in 
+    let pos = snd (List.hd state.players) in 
+    let property = List.nth state.board pos in 
+    let property_names = 
+      List.map (fun x -> Property.get_name x) (Player.get_properties player) in
+    if Property.get_name property = s 
+    && List.mem s property_names
+    then true else false
+  | Collect (s1, s2, s3) -> failwith "Unimplemented collect"
   | _ -> failwith "Command should not have been run/DNE."
+
+let rec options_helper state lst str = 
+  match lst with 
+  | [] -> str 
+  | h::t -> if valid_command h state 
+    then options_helper state t (Command.to_string h ^ " " ^ str) 
+    else options_helper state t str
+
+let view_options state = 
+  let pos = snd (List.hd state.players) in 
+  let property = List.nth state.board pos in 
+  let property_name = Property.get_name property in 
+  let commands_lst = [Command.End_Turn; Command.Forfeit; Command.Roll;
+                      Command.Buy property_name; Command.Sell property_name;] in
+  options_helper state commands_lst ""
 
 let move_card_to_bottom lst = (List.tl lst)@[List.hd lst]
 
-let card_helper card state = 
-  match Cc_card.get_action card with
-  | Pay x -> 
-    let player = fst (List.hd state.players) in 
-    let balance = Player.get_money player in 
-    let pay = Player.set_money player (balance + x) in
-    {
-      players = state.players;
-      board = state.board;
-      chance_stack = state.chance_stack;
-      community_stack = state.community_stack;
-      num_rolls = 0;
-    }
-  | Receive x -> failwith ""
-  | OutJail -> failwith ""
-  | GoJail -> failwith ""
-  | Advance s -> failwith ""
+let rec tile_pos board tile_name : int= 
+  match board with
+  | [] -> failwith "Jail not found"
+  | h::t -> if Property.get_name h = tile_name
+    then Property.get_pos h else tile_pos t tile_name
 
-let handle_command (command : Command.t) state = 
+let rec handle_command (command : Command.t) state = 
   match command with 
-  | End_Turn -> (* Outputs state for next player. *)
+  | End_Turn ->
     let curr_player = List.hd state.players in 
     let new_lst = (List.tl state.players)@[curr_player] in 
-    {
-      players = new_lst;
-      board = state.board;
-      chance_stack = state.chance_stack;
-      community_stack = state.community_stack;
-      num_rolls = 0;
-    }
-  | Forfeit -> (* Removes player from list, and their buildings from board.*)
-    {
+    {state with players = new_lst; num_rolls = 0}
+  | Forfeit -> {
       players = List.tl state.players;
       board = Newboard.reset_properties (state.board) 
           (fst (List.hd state.players));
@@ -118,18 +127,98 @@ let handle_command (command : Command.t) state =
       community_stack = state.community_stack;
       num_rolls = 0;
     }
-  (* Updates player position. Automatically draws card if it lands on a chance
-     or community tile. Automatically moves to jail if it lands on go to jail.*)
+  | Buy s -> 
+    let player = fst (List.hd state.players) in 
+    let pos = snd (List.hd state.players) in 
+    let property = List.nth state.board pos in
+    begin
+      match Player.get_property_by_name player s with 
+      | None -> let updated_player = Action.buy_property property player in 
+        {state with players = (updated_player, pos)::List.tl state.players}
+      | Some prop -> Action.buy_building property player; state
+    end
+  | Sell s -> 
+    let player = fst (List.hd state.players) in 
+    let pos = snd (List.hd state.players) in 
+    let property = List.nth state.board pos in
+    begin
+      match Player.get_property_by_name player s with 
+      | None -> failwith "Does not own property"
+      | Some prop ->
+        let updated_player = Action.sell_property property player in 
+        {state with players = (updated_player, pos)::List.tl state.players}
+    end
   | Roll -> 
-    failwith ""
-  (* Draws a card from stack, automatically executes action related to card.*)
-  | Draw_Chance -> failwith ""
-  | Draw_Community -> failwith ""
-
-  (* Buys a property.*)
-  | Buy s -> failwith ""
-  (* Sells a property for half the price bought.*)
-  | Sell s -> failwith ""
-
-  | Collect (s1, s2, s3) -> failwith ""
+    let roll = Action.roll_dice in roll_helper roll state
   | _ -> failwith "Command should not have been run/DNE."
+
+and roll_helper (roll: Action.t) state= 
+  match roll with 
+  | Step x -> 
+    let player = fst (List.hd state.players) in
+    let pos = (snd (List.hd state.players) + x) mod List.length state.board in 
+    let new_state = 
+      {state with players = (player, pos)::List.tl state.players} in
+    let board = state.board in 
+    let property = List.nth board pos in
+    advance_helper new_state property
+  | Jail -> 
+    let player = fst (List.hd state.players) in
+    let pos = tile_pos state.board "Jail" in 
+    {
+      players = (player, pos)::List.tl state.players;
+      board = state.board;
+      chance_stack = state.chance_stack;
+      community_stack = state.community_stack;
+      num_rolls = 1;
+    }
+  | Draw_Chance | Draw_Community -> failwith "Impossible"
+
+and card_helper card state = 
+  let player = fst (List.hd state.players) in 
+  match Cc_card.get_action card with
+  | Pay x -> 
+    let balance = Player.get_money player in 
+    Player.set_money player (balance + x); 
+    state
+  | Receive x -> 
+    let balance = Player.get_money player in 
+    Player.set_money player (balance - x);
+    state
+  | OutJail -> 
+    let pos = snd (List.hd state.players) in 
+    let update_player = Player.receive_jail_card player in 
+    {state with players = (update_player, pos)::List.tl state.players}
+  | GoJail -> 
+    let pos = tile_pos state.board "Jail" in 
+    {state with players = (player, pos)::List.tl state.players}
+  | Advance s -> 
+    let pos = tile_pos state.board s in 
+    let new_state = 
+      {state with players = (player, pos)::List.tl state.players} in
+    let property = List.nth new_state.board pos in 
+    advance_helper new_state property
+
+(* Updates player position. Automatically draws card if it lands on a chance
+     or community tile. Automatically moves to jail if it lands on go to jail.
+     Automatically charges rent if lands on property owned by someone else.*)
+and advance_helper state property = 
+  match Property.get_type property with 
+  (* Get charged if land on someone elses property *)
+  | Property -> failwith ""
+  (* Get charged if land on someone elses property *)
+  | Railroad -> failwith ""
+  (* Get charged if land on someone elses property *)
+  | Utility -> failwith ""
+  (* Get charged. *)
+  | Tax -> failwith ""
+  | Chance_card -> 
+    let card = List.hd state.chance_stack in 
+    let new_state = card_helper card state in 
+    {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+  | Community_chest -> 
+    let card = List.hd state.chance_stack in 
+    let new_state = card_helper card state in 
+    {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+  | Go_to_jail -> roll_helper Action.Jail state
+  | In_jail_just_visiting | Go | Free_parking -> state
