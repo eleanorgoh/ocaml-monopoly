@@ -96,6 +96,9 @@ let rec get_tile (board : t) (position : int) : Property.t =
 let get_name (board : t) (position : int) : string =
   let tile = get_tile board position in get_name tile
 
+let get_names (board : t) : string list = 
+  List.map (fun x -> Property.get_name x) board
+
 let get_color (board : t) (position : int) : color = 
   let tile = get_tile board position in get_color tile
 
@@ -113,3 +116,15 @@ let get_num_buildings (board : t) (position : int) : int =
 
 let get_type (board : t) (position : int) : tile_type = 
   let tile = get_tile board position in get_type tile
+
+let rec reset_helper board (names : string list) newBoard = 
+  match board with 
+  | [] -> newBoard
+  | h::t -> if List.mem (Property.get_name h) names
+    then reset_helper t names (newBoard@[Property.reset_property h])
+    else reset_helper t names (newBoard@[h])
+
+let reset_properties (board : t) (player : Player.t) = 
+  let properties = Player.get_properties player in 
+  let names = List.map (fun x -> Property.get_name x) properties in 
+  reset_helper board names []

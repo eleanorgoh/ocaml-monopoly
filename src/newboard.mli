@@ -19,6 +19,9 @@ val get_tile : t -> int -> Property.t
 (** [get_name board position] is the name for the tile at [position]. *)
 val get_name : t -> int -> string
 
+(** [get_names board] is the list of names of all the tiles. *)
+val get_names : t -> string list
+
 (** [get_type board position] is the type for the tile at [position]. *)
 val get_type : t -> int -> Property.tile_type
 
@@ -35,3 +38,7 @@ val get_building_cost : t -> int -> int
 (** [get_num_buildings board position] is the number of buildings 
     on the tile at [position]. *)
 val get_num_buildings : t -> int -> int
+
+(** [reset_properties board p] resets all the tiles that player [p] owned. 
+    This is for when a player forfeits and all his buildings are removed.*)
+val reset_properties : t -> Player.t -> t

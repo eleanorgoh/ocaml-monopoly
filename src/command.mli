@@ -119,3 +119,7 @@ val create_command : string list -> t
 
 *)
 val parse : string -> t
+
+
+(** [to_string t] is the string representation of command [t]. *)
+val to_string : t -> string

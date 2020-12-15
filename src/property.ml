@@ -84,3 +84,12 @@ let get_pos (property : t) : int = property.position
 let add_building (property : t) = 
   if property.num_buildings = 5 then failwith ("Too many buildings.")
   else property.num_buildings <- property.num_buildings + 1
+
+let change_num_buildings (property : t) (x : int) = 
+  property.num_buildings <- x
+
+let reset_property (property : t) = 
+  match property.tile_type with
+  | Property ->  change_num_buildings property 0; property
+  | Railroad -> change_num_buildings property 4; property
+  | Utility | Tax | Chance_card | Community_chest | Free_parking | Go_to_jail | In_jail_just_visiting | Go -> property

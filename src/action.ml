@@ -73,7 +73,8 @@ let sell_property property player =
   let prop_opt = Player.get_property_by_name player (Property.get_name property) 
   in 
   match prop_opt with 
-  | None -> raise (TransactionError "Player can't sell property they don't own.")
+  | None -> 
+    raise (TransactionError "Player can't sell property they don't own.")
   | Some prop -> 
     Player.set_money player (player_money + resale_price); 
     Player.remove_property player prop 

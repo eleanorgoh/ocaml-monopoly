@@ -19,7 +19,8 @@ let card1 = init_card Community "Pay $200 for taxes" (Pay 200)
 let card2 = init_card Chance "Receive $200 from bank for birthday" (Receive 200)
 let card3 = init_card Community "Get out of jail free card" (OutJail)
 let card4 = init_card Chance "It's your unlucky day. Go to jail" (GoJail)
-let card5 = init_card Community "It's your lucky day. Advance to Go" (Advance "Go")
+let card5 = 
+  init_card Community "It's your lucky day. Advance to Go" (Advance "Go")
 
 
 let card_tests = [
