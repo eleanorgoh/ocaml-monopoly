@@ -9,10 +9,10 @@
 (** The abstract type of values representing the game state. *)
 type t 
 
-(** [init_state board names] is the initial state of the game when playing 
-    monopoly game [board]. In that state, there are players with names [names],
-    and all of them are on the Go tile with a balance of $1500. 
-    No player owns any properties. *)
+(** [init_state board lst] is the initial state of the game when playing 
+    monopoly game [board]. In that state, there are players with names and 
+    markers [(name,marker)], and all of them are on the Go tile with a balance 
+    of $1500. No player owns any properties. *)
 val init_state : Newboard.t -> (string * string) list ->  t
 
 (** [current_pos game name] is the position of the board that the player's piece 
