@@ -189,11 +189,11 @@ and card_helper card state =
   match Cc_card.get_action card with
   | Pay x -> 
     let balance = Player.get_money player in 
-    Player.set_money player (balance + x); 
+    Player.set_money player (balance - x); 
     state
   | Receive x -> 
     let balance = Player.get_money player in 
-    Player.set_money player (balance - x);
+    Player.set_money player (balance + x);
     state
   | OutJail -> 
     let pos = snd (List.hd state.players) in 
@@ -209,19 +209,15 @@ and card_helper card state =
     let property = List.nth new_state.board pos in 
     advance_helper new_state property
 
-(* Updates player position. Automatically draws card if it lands on a chance
-     or community tile. Automatically moves to jail if it lands on go to jail.
-     Automatically charges rent if lands on property owned by someone else.*)
 and advance_helper state property = 
   match Property.get_type property with 
-  (* Get charged if land on someone elses property *)
-  | Property -> failwith ""
-  (* Get charged if land on someone elses property *)
-  | Railroad -> failwith ""
-  (* Get charged if land on someone elses property *)
-  | Utility -> failwith ""
-  (* Get charged. *)
-  | Tax -> failwith ""
+  | Property | Railroad | Utility -> get_charged state property
+  | Tax -> 
+    let player = fst (List.hd state.players) in 
+    let tax_amount = Property.get_rent_cost property in 
+    let balance = Player.get_money player in 
+    Player.set_money player (balance - tax_amount); 
+    state
   | Chance_card -> 
     let card = List.hd state.chance_stack in 
     let new_state = card_helper card state in 
@@ -232,3 +228,27 @@ and advance_helper state property =
     {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
   | Go_to_jail -> roll_helper Action.Jail state
   | In_jail_just_visiting | Go | Free_parking -> state
+
+and player_owns player property = 
+  let property_name = Property.get_name property in 
+  match Player.get_property_by_name player property_name with 
+  | Some x -> true
+  | None -> false
+
+and others_owns_helper player_lst property=
+  match player_lst with 
+  | [] -> None
+  | h::t -> match player_owns (fst h) property with
+    | false -> others_owns_helper t property
+    | true -> Some (fst h)
+
+and get_charged state property = 
+  let player = fst (List.hd state.players) in 
+  if player_owns player property then state
+  else 
+    let players = List.tl state.players in
+    match others_owns_helper players property with
+    | None -> state
+    | Some h -> let owner = h in 
+      Action.collect_rent owner player property;
+      state
