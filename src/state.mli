@@ -15,7 +15,12 @@ type t
     of $1500. No player owns any properties. *)
 val init_state : Newboard.t -> (string * string) list ->  t
 
+(** [get_player_pos game] is a list of all the players and their positions on 
+    the board. Each entry in the list is formatted as (player name, position).*)
 val get_player_pos : t -> (string * int) list
+
+(** [get_board game] is the static board data of [game]. *)
+val get_board : t -> Newboard.t
 
 (** [current_pos game name] is the position of the board that the player's piece 
     is on. *)
@@ -34,6 +39,6 @@ val winner : t -> Player.t option
     and updates the board. *)
 val handle_command : t -> Command.t -> t
 
-(** [handle_command board command] checks if the command is valid for the player
+(** [handle_command board command] checks if [command] is valid for the player
     at the current position. *)
 val valid_command : t -> Command.t -> bool

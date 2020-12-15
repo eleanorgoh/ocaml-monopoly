@@ -55,8 +55,9 @@ let current_pos state name = pos_helper name state.players
 let rec count_balances count players = 
   match players with
   | [] -> count
-  | h::t -> if Player.get_money (fst h) > 0 then count_balances (count + 1) t
-    else count_balances count t
+  | h::t -> let p = fst h in 
+    if Player.get_money p > 0 && Player.get_properties p = []
+    then count_balances (count + 1) t else count_balances count t
 
 let rec find_winner players = 
   match players with
@@ -67,6 +68,8 @@ let rec find_winner players =
 let winner state = 
   if count_balances 0 state.players = 1 then find_winner state.players
   else None
+
+let get_board state = state.board 
 
 let player_stat state = Player.player_to_string (fst (List.hd state.players))
 
@@ -119,7 +122,7 @@ let move_card_to_bottom lst = (List.tl lst)@[List.hd lst]
 
 let rec tile_pos board tile_name : int= 
   match board with
-  | [] -> failwith "Jail not found"
+  | [] -> failwith "Tile not found"
   | h::t -> if Property.get_name h = tile_name
     then Property.get_pos h else tile_pos t tile_name
 
@@ -142,7 +145,7 @@ let rec handle_command state (command : Command.t)  =
     let pos = snd (List.hd state.players) in 
     let property = List.nth state.board pos in
     begin
-      match Player.get_property_by_name player s with 
+      match Player.get_property_by_name player (Property.get_name property) with 
       | None -> let updated_player = Action.buy_property property player in 
         {state with players = (updated_player, pos)::List.tl state.players}
       | Some prop -> Action.buy_building property player; state
@@ -152,7 +155,7 @@ let rec handle_command state (command : Command.t)  =
     let pos = snd (List.hd state.players) in 
     let property = List.nth state.board pos in
     begin
-      match Player.get_property_by_name player s with 
+      match Player.get_property_by_name player (Property.get_name property) with 
       | None -> failwith "Does not own property"
       | Some prop ->
         let updated_player = Action.sell_property property player in 
