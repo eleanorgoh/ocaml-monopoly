@@ -49,8 +49,10 @@ let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 0
 
 let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
 let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
-let in_jail_prop = init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
-let free_parking_prop = init_property 1 "GO" Light_Blue Free_parking 0 1 2 3 4 5 10 20 0
+let in_jail_prop = 
+  init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
+let free_parking_prop = 
+  init_property 1 "GO" Light_Blue Free_parking 0 1 2 3 4 5 10 20 0
 let utility_prop = init_property 1 "GO" Light_Blue Utility 0 1 2 3 4 5 10 20 0
 
 let prop_lst_28 = [

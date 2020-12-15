@@ -49,8 +49,8 @@ let p1 = init_new_player "Sam" "gudetama"
 
 let p2 = init_new_player "Eleanor" "puppy"
 let p3 = init_new_player "John" "bear"
-let p4 = Action.buy_property prop_4 (init_new_player "George" "camel") (* 1499 *)
-let p5 = Action.buy_property prop_8 (init_new_player "Orwell" "animal") (* 1490 *)
+let p4 = Action.buy_property prop_4 (init_new_player "George" "camel")
+let p5 = Action.buy_property prop_8 (init_new_player "Orwell" "animal")
 
 let p1_1_prop = add_property (init_new_player "Sam" "gudetama") 
     prop_1 
