@@ -55,5 +55,6 @@ let rec string_helper property_lst result=
 
 let player_to_string p = 
   "Player " ^ p.name ^ " (marker: " ^ p.marker ^ " ) has a balance of $" ^ 
-  string_of_int p.money ^ ". They own the following properties: " ^ string_helper 
-    (List.tl p.properties) (Property.get_name (List.hd p.properties)) ^ "."
+  string_of_int p.money ^ ". They own the following properties: " ^ 
+  string_helper (List.tl p.properties)(Property.get_name (List.hd p.properties))
+  ^ "."
