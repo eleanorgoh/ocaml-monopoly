@@ -1,5 +1,6 @@
 open Graphics
 open Property
+open State
 
 let init_window = 
   open_graph ""; 
@@ -35,17 +36,17 @@ let coords = [
 ]
 
 let prop_0 = init_property 1 "PSB" Light_Blue Property 0 1 2 3 4 5 10 20 0
-let prop_1 = init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 0
-let prop_2 = init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 0
-let prop_3 = init_property 0 "Slope" Dark_Blue Property 0 1 2 3 4 5 1 1 0
-let prop_4 = init_property 0 "Line 92" Red Railroad 0 1 2 3 4 5 0 1 0
-let prop_5 = init_property 0 "Mac's" Red Property 0 1 2 3 4 5 1 9999 0
+let prop_1 = init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 1
+let prop_2 = init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 2
+let prop_3 = init_property 0 "Slope" Dark_Blue Property 0 1 2 3 4 5 1 1 3
+let prop_4 = init_property 0 "Line 92" Red Railroad 0 1 2 3 4 5 0 1 4
+let prop_5 = init_property 0 "Mac's" Red Property 0 1 2 3 4 5 1 9999 5
 let prop_6 = init_property 0 "Terrace" Pink Community_chest 1 1 1 1 1 1 1 9999 0
-let prop_7 = init_property 0 "Sage" Brown Go_to_jail 1 1 1 1 1 1 1 10 0 
+let prop_7 = init_property 0 "Sage" Brown Go_to_jail 1 1 1 1 1 1 1 10 2
 let prop_8 = init_property 
     0 "Expensive Rent" Green Property 9999 9999 9999 9999 9999 9999 9999 10 0
-let prop_9 = init_property 0 "Olin" Pink Chance_card 1 1 1 1 1 1 1 10 0
-let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 0 
+let prop_9 = init_property 0 "Olin" Pink Chance_card 1 1 1 1 1 1 1 10 4
+let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 1
 
 let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
 let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
@@ -193,7 +194,15 @@ let draw_tile_tax coord prop =
   draw_tax (x + 2 * padding, y + sq_dim / 2 - 8) 3 black;
   draw_string_in_tile Center coord ("Pay $200") (sq_dim / 7) 8
 
-let render_player_pos player = failwith "TODO"
+let square_marker coord color scale = failwith "TODO"
+
+let circle_marker coord color scale = failwith "TODO"
+
+let star_marker coord color scale = failwith "TODO"
+
+let triangle_marker coord color scale = failwith "TODO"
+
+let render_player_pos state = failwith "TODO"
 (* Example animation
 
    let move_rect pos size speed n =
@@ -365,7 +374,7 @@ let draw_jail coord prop =
   draw_jail_cell (x + padding, y + padding) 2;
   draw_string_in_tile Center coord ("IN JAIL") (14 * sq_dim / 25) 15
 
-let draw_buildings prop = failwith "TODO"
+let draw_buildings board = failwith "TODO"
 
 let draw_letter_box_offset x y color scale = 
   set_color black;
