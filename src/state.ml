@@ -9,9 +9,8 @@ type state = {
 
 type t = state
 
-let get_player_pos state : (string * int) list = 
-  let players = state.players in 
-  List.map (fun (x,y) -> (Player.get_name x, y)) players
+let get_player_pos state : (Player.t * int) list = 
+  state.players
 
 let create_card (category : Cc_card.category) (board : Newboard.t)= 
   let names = Newboard.get_names board in 
@@ -229,7 +228,7 @@ and roll_helper (roll: Action.t) state =
   | Step x -> 
     let player = fst (List.hd state.players) in
     let old_pos = snd (List.hd state.players) in 
-    let pos = (old_pos + x) mod List.length state.board in 
+    let pos = (old_pos + x) mod (List.length state.board) in 
     let new_state = 
       {state with players = (player, pos)::List.tl state.players} in
     print_string ("\n~~~~~~~~~~~~~~~~~~~~" 
@@ -248,7 +247,7 @@ and roll_helper (roll: Action.t) state =
       let balance = Player.get_money player in 
       Player.set_money player (balance + 200); 
       print_string ("Hooray! You passed 'Go'! You will now receive $200. \n\n");
-      print_string ("  /$$$$$$   /$$$$$$   /$$$$$$ 
+      print_string (" /$$$$$$   /$$$$$$   /$$$$$$ 
  /$$__  $$ /$$$_  $$ /$$$_  $$
 |__/  \ $$| $$$$\ $$| $$$$\ $$
   /$$$$$$/| $$ $$ $$| $$ $$ $$

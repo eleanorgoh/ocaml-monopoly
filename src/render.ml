@@ -1,11 +1,6 @@
 open Graphics
 open Property
 
-let init_window = 
-  open_graph ""; 
-  set_window_title "Monopoly"; 
-  resize_window 1000 801
-
 (* Preset colors *)
 let brown = rgb 139 69 19 
 let light_blue = rgb 0 191 255 
@@ -34,33 +29,27 @@ let coords = [
   (100, 0)
 ]
 
-let prop_0 = init_property 1 "PSB" Light_Blue Property 0 1 2 3 4 5 10 20 0
-let prop_1 = init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 0
-let prop_2 = init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 0
-let prop_3 = init_property 0 "Slope" Dark_Blue Property 0 1 2 3 4 5 1 1 0
-let prop_4 = init_property 0 "Line 92" Red Railroad 0 1 2 3 4 5 0 1 0
-let prop_5 = init_property 0 "Mac's" Red Property 0 1 2 3 4 5 1 9999 0
-let prop_6 = init_property 0 "Terrace" Pink Community_chest 1 1 1 1 1 1 1 9999 0
-let prop_7 = init_property 0 "Sage" Brown Go_to_jail 1 1 1 1 1 1 1 10 0 
-let prop_8 = init_property 
-    0 "Expensive Rent" Green Property 9999 9999 9999 9999 9999 9999 9999 10 0
-let prop_9 = init_property 0 "Olin" Pink Chance_card 1 1 1 1 1 1 1 10 0
-let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 0 
+let mouse_within_tile mouse_x mouse_y =
+  let rec mouse_within_tile_helper mouse_x mouse_y acc = function 
+    | [] -> None
+    | (x, y) :: t ->
+      if (mouse_x >= x && mouse_x <= x + 100 
+          && mouse_y >= y && mouse_y <= y + 100) 
+      then Some acc
+      else mouse_within_tile_helper mouse_x mouse_y (acc + 1) t
+  in 
+  mouse_within_tile_helper mouse_x mouse_y 0 coords
 
-let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
-let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
-let in_jail_prop = 
-  init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
-let free_parking_prop = 
-  init_property 1 "GO" Light_Blue Free_parking 0 1 2 3 4 5 10 20 0
-let utility_prop = init_property 1 "GO" Light_Blue Utility 0 1 2 3 4 5 10 20 0
-
-let prop_lst_28 = [
-  go_prop; prop_0; prop_1; prop_2; prop_3; prop_4; prop_5; 
-  prop_6; utility_prop; prop_8; prop_9; prop_10; prop_0; prop_1; 
-  in_jail_prop; prop_3; prop_4; prop_5; tax_prop; prop_7; prop_8; 
-  prop_9; free_parking_prop; prop_4; prop_1; prop_2; prop_3; prop_5
-]
+let mouse_in_header mouse_x mouse_y =
+  let rec mouse_within_tile_helper mouse_x mouse_y = function 
+    | [] -> false
+    | (x, y) :: t ->
+      if (mouse_x >= x && mouse_x <= x + 100 
+          && mouse_y >= y + 100 - header_height && mouse_y <= y + 100) 
+      then true
+      else mouse_within_tile_helper mouse_x mouse_y t
+  in 
+  mouse_within_tile_helper mouse_x mouse_y coords
 
 let convert_color = function 
   | Brown -> brown
@@ -100,10 +89,34 @@ let draw_string_in_tile pos coord str y_height size =
   set_text_size size;
   draw_string str
 
+let draw_building coord scale color = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y); (x + 2 * scale, y); (x + 2 * scale, y + scale);
+              (x + scale, y + 2 * scale); (x, y + scale)|]
+
+let rec draw_buildings num_left coord color = 
+  if num_left = 0 then ()
+  else 
+    let x' = fst coord + padding + padding / 5 in 
+    let y' = snd coord in 
+    draw_building coord 5 color;
+    draw_buildings (num_left - 1) (x', y') color
+
+let building_color prop = match Property.get_color prop with 
+  | Dark_Blue | Brown -> white 
+  | _ -> black
+
 let draw_tile_property coord prop = 
+  let x = fst coord in 
+  let y = snd coord in 
   let color = prop |> Property.get_color |> convert_color in 
   set_color go_green; fill_rect (fst coord) (snd coord) sq_dim sq_dim;
   fill_header color coord;
+  draw_buildings (Property.get_num_buildings prop) 
+    (x + padding, y + sq_dim - header_height + 2 * padding / 3) 
+    (building_color prop);
   let prop_name = Property.get_name prop in 
   let price = prop |> Property.get_price |> string_of_int in 
   draw_string_in_tile Center coord prop_name (sq_dim / 2) 15;
@@ -193,23 +206,103 @@ let draw_tile_tax coord prop =
   draw_tax (x + 2 * padding, y + sq_dim / 2 - 8) 3 black;
   draw_string_in_tile Center coord ("Pay $200") (sq_dim / 7) 8
 
-let render_player_pos player = failwith "TODO"
-(* Example animation
+let square_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x - scale, y - scale); (x - scale, y + scale); 
+              (x + scale, y + scale); (x + scale, y - scale)|];
+  set_color black;
+  set_line_width 3;
+  draw_poly [|(x - scale, y - scale); (x - scale, y + scale); 
+              (x + scale, y + scale); (x + scale, y - scale)|];
+  set_line_width 1
 
-   let move_rect pos size speed n =
-   let (x, y) = pos and (sx,sy) = size in
-   let mem = ref (Graphics.get_image x y sx sy) in 
-   let rec move_aux x y speed n =
-    if n = 0 then Graphics.moveto x y
-    else 
-     let ((nx,ny),n_speed) = calc_pv (x,y) (sx,sy) speed 
-     and old_mem = !mem in 
-      mem := Graphics.get_image nx ny sx sy;
-      Graphics.set_color Graphics.blue;
-      Graphics.fill_rect nx ny sx sy;
-      Graphics.draw_image (inv_image old_mem) x y;
-      move_aux nx ny n_speed (n-1)
-   in move_aux x y speed n *)
+let circle_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_circle x y scale;
+  set_color black;
+  set_line_width 3;
+  draw_circle x y scale;
+  set_line_width 1
+
+let diamond_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|];
+  set_color black;
+  set_line_width 3;
+  draw_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|];
+  set_line_width 1
+
+let triangle_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|];
+  set_color black;
+  set_line_width 3;
+  draw_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|];
+  set_line_width 1
+
+let render_player_pos_helper player coord = 
+  match player with 
+  | "Circle" -> circle_marker_centered coord cyan 10
+  | "Square" -> square_marker_centered coord cyan 10
+  | "Triangle" -> triangle_marker_centered coord magenta 10
+  | "Diamond" -> diamond_marker_centered coord magenta 10
+  | _ -> failwith "Somehow got an incorrect player marker type."
+
+let rec render_player_positions rstate posns offset = 
+  match posns with 
+  | [] -> () 
+  | (player, pos) :: t -> 
+    let board = Render_state.get_board rstate in 
+    begin 
+      match pos with 
+      | None -> render_player_positions rstate t offset
+      | Some pos ->
+        let curr_tile_type = Newboard.get_type board pos in 
+        let tile_coords = Stdlib.List.nth coords pos in
+        (* in header / not in jail *)
+        let x' = fst tile_coords + sq_dim / 5 + offset in 
+        let y' = snd tile_coords + sq_dim - header_height / 2 in 
+        (* in center / in jail*)
+        let x'' = fst tile_coords + sq_dim / 5 + offset in 
+        let y'' = snd tile_coords + sq_dim / 2 in 
+        (begin 
+          match curr_tile_type with 
+          | In_jail_just_visiting -> 
+            begin 
+              match player with 
+              | "Circle" -> 
+                if rstate.circle_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Square" -> 
+                if rstate.square_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Triangle" -> 
+                if rstate.triangle_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Diamond" -> 
+                if rstate.diamond_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | _ -> failwith "Somehow got an incorrect player marker type."
+            end
+          | _ ->       
+            render_player_pos_helper player (x'', y'')
+        end); render_player_positions rstate t (offset + 2 * padding) 
+    end
+
+let render_player_positions_from_state rstate = 
+  render_player_positions rstate (Render_state.lst_posns rstate) 0
 
 let draw_lightning coord color scale = 
   let x = fst coord in 
@@ -365,8 +458,6 @@ let draw_jail coord prop =
   draw_jail_cell (x + padding, y + padding) 2;
   draw_string_in_tile Center coord ("IN JAIL") (14 * sq_dim / 25) 15
 
-let draw_buildings prop = failwith "TODO"
-
 let draw_letter_box_offset x y color scale = 
   set_color black;
   fill_rect (x - 5 * scale - 3) (y - 5 * scale - 3) (25 * scale) (35 * scale);
@@ -477,7 +568,7 @@ let camel_arr =
     (262, 405); (265, 399); (281, 399); (296, 391); (315, 386); (328, 377); 
     (343, 367)|]
 
-let transform_camel scale trans_x trans_y = Array.map 
+let transform_camel scale trans_x trans_y = Stdlib.Array.map 
     (fun (x, y) -> 
        (int_of_float (float_of_int x *. scale +. trans_x), 
         int_of_float (float_of_int y *. scale +. trans_y))) camel_arr
@@ -494,7 +585,7 @@ let draw_camel color trans_x trans_y scale =
   draw_poly camel_arr_transformed;
   set_line_width 1
 
-let draw_camel_centerpiece = 
+let draw_camel_centerpiece () = 
   fill_camel red 274. 184. 0.50; 
   fill_camel orange 274.75 184.75 0.50; 
   fill_camel dark_yellow 275.5 185.5 0.50; 
@@ -515,13 +606,93 @@ let draw_board board =
     | _, _ -> failwith "Board size mismatch"
   in loop board coords
 
-let () = init_window; 
-  try draw_board prop_lst_28; draw_monopoly_centerpiece 400 400; 
-    draw_camel_centerpiece;
-    let rec loop x y  = 
-      let _ = wait_next_event [Poll] and wx' = size_x () and wy' = size_y ()
-      in loop wx' wy'
-    in 
-    loop 0 0 
+let draw_state rstate = 
+  let board = Render_state.get_board rstate in 
+  draw_board board;
+  render_player_positions_from_state rstate
+
+let process_json json = Newboard.from_json json
+
+let board = "board.json"|> Yojson.Basic.from_file |> process_json 
+
+let handle_first_click rstate func_call chng_jail_func = 
+  let status' = wait_next_event [Button_down] in 
+  let m_x = status'.mouse_x in 
+  let m_y = status'.mouse_y in 
+  let pos_opt = mouse_within_tile m_x m_y in 
+  let in_header = mouse_in_header m_x m_y in 
+  match pos_opt with 
+  | None -> 
+    let rst' = rstate in 
+    if in_header then chng_jail_func rst' false
+    else chng_jail_func rst' true
+  | Some pos -> 
+    let rst'' = func_call pos rstate in 
+    if in_header then chng_jail_func rst'' false
+    else chng_jail_func rst'' true
+
+let detect_click rstate =
+  let status = wait_next_event [Button_down] in
+  if status.mouse_x >= 850 && status.mouse_x <= 950 && status.mouse_y >= 600
+     && status.mouse_y <= 640 then 
+    handle_first_click rstate 
+      Render_state.add_building_at_pos Render_state.change_circle_jail
+  else if status.mouse_x >= 850 && status.mouse_x <= 950 
+          && status.mouse_y >= 550 && status.mouse_y <= 590 then 
+    handle_first_click rstate 
+      Render_state.reset_buildings_at_pos Render_state.change_circle_jail
+  else if status.mouse_x >= 850 && status.mouse_x <= 950 
+          && status.mouse_y >= 500 && status.mouse_y <= 540 then 
+    handle_first_click rstate 
+      Render_state.move_circle Render_state.change_circle_jail
+  else if status.mouse_x >= 850 && status.mouse_x <= 950 
+          && status.mouse_y >= 450 && status.mouse_y <= 490 then 
+    handle_first_click rstate 
+      Render_state.move_diamond Render_state.change_diamond_jail
+  else if status.mouse_x >= 850 && status.mouse_x <= 950 
+          && status.mouse_y >= 400 && status.mouse_y <= 440 then 
+    handle_first_click rstate 
+      Render_state.move_square Render_state.change_square_jail
+  else if status.mouse_x >= 850 && status.mouse_x <= 950 
+          && status.mouse_y >= 350 && status.mouse_y <= 390 then 
+    handle_first_click rstate 
+      Render_state.move_triangle Render_state.change_triangle_jail
+  else rstate
+
+let button coord name = 
+  let x = fst coord in 
+  let y = snd coord in
+  set_color go_green;
+  fill_rect x y 100 40;
+  set_color black;
+  draw_rect x y 100 40;
+  draw_string_in_tile Center (x, y) name 15 20
+
+let render () = 
+  open_graph ""; 
+  set_window_title "Monopoly"; 
+  resize_window 1000 801;
+  auto_synchronize true;
+  button (850, 600) "Add Building";
+  button (850, 550) "Reset Buildings";
+  button (850, 500) "Move Circle";
+  button (850, 450) "Move Diamond";
+  button (850, 400) "Move Square";
+  button (850, 350) "Move Triangle";
+  draw_monopoly_centerpiece 400 400; 
+  draw_camel_centerpiece ()
+
+let rec render_loop st = 
+  draw_state st;
+  let st' = detect_click st in 
+  draw_state st'; 
+  render_loop st'
+
+let () = 
+  try 
+    render (); 
+    let initial_state = Render_state.init_state board in 
+    draw_state initial_state;
+    render_loop (detect_click initial_state)
   with Graphic_failure _ -> print_endline "Exiting... Thanks for playing!"
 

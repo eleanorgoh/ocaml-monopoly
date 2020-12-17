@@ -80,6 +80,11 @@ val get_pos : t -> int
     Requires: property has less than 5 buildings.*)
 val add_building : t -> unit
 
+(** [change_num_buildings prop x] is [prop] after changing its number of 
+    buildings to [x]. 
+    Requires: 0 <= x <= 5. *)
+val change_num_buildings : t -> int -> unit
+
 (** [reset_property prop] is [property] at it's default state with no buildings
     on it. *)
 val reset_property : t -> t
