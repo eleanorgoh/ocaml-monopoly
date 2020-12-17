@@ -9,7 +9,7 @@ type state = {
 
 type t = state
 
-let print_roll_message = 
+let print_roll_message () = 
   print_string ("\n~~~~~~~~~~~~~~~~~~~~" 
                 ^ " Rolling the dice " ^ "~~~~~~~~~~~~~~~~~~~~ \n");
   print_string("───▄██▄─██��───▄
@@ -19,7 +19,7 @@ let print_roll_message =
 ░▐▄▐▄░░░▐▄▐▄░░░░
 " ^ "\n")
 
-let print_pass_go = 
+let print_pass_go () = 
   print_string ("Hooray! You passed 'Go'! You will now receive $200. \n\n");
   print_string (" /$$$$$$   /$$$$$$   /$$$$$$ 
  /$$__  $$ /$$$_  $$ /$$$_  $$
@@ -32,7 +32,7 @@ let print_pass_go =
 
                               " ^ "\n")
 
-let print_jail_message = 
+let print_jail_message () = 
   print_string ("Unfortunately, you are going to jail. \n\n");
   print_string 
     ("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ 
@@ -279,13 +279,13 @@ and roll_step_helper state steps =
   let pos = (old_pos + steps) mod (List.length state.board) in 
   let new_state = 
     {state with players = (player, pos)::List.tl state.players} in
-  print_roll_message;
+  print_roll_message ();
   print_string ("After rolling, you are moving " ^ 
                 (string_of_int steps) ^ " steps forward. \n\n");
   if old_pos > pos && pos <> 0 then 
     let balance = Player.get_money player in 
     Player.set_money player (balance + 200); 
-    print_pass_go;
+    print_pass_go ();
   else print_string ("");
   let board = state.board in 
   let property = List.nth board pos in
@@ -294,7 +294,7 @@ and roll_step_helper state steps =
 and roll_jail_helper state = 
   let player = fst (List.hd state.players) in
   let pos = tile_pos state.board "Go_to_jail" in 
-  print_jail_message;
+  print_jail_message ();
   if Player.has_jail_card player then 
     let () = print_string 
         ("BUT, you have a 'Get Out Of Jail' card! Using that card now. \n") in 
