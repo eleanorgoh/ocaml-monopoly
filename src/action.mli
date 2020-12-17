@@ -20,7 +20,7 @@ exception TransactionError of string
 exception PlayerBankrupt of string
 
 (** [roll_dice] is the outcome of a player's roll in one turn. *)
-val roll_dice : t
+val roll_dice : unit -> t
 
 (** [draw_community] is the action of drawing from the 
     Community Chest deck. *)

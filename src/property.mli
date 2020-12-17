@@ -83,3 +83,7 @@ val add_building : t -> unit
 (** [reset_property prop] is [property] at it's default state with no buildings
     on it. *)
 val reset_property : t -> t
+
+(** [string_of_property_type t] is the string representation of the 
+    type of [t]. *)
+val string_of_property_type : tile_type -> string

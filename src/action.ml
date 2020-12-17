@@ -9,7 +9,8 @@ type t =
 exception TransactionError of string
 exception PlayerBankrupt of string
 
-let roll_dice = 
+let roll_dice () = 
+  Random.self_init ();
   let die_1 = Random.int 5 + 1 in 
   let die_2 = Random.int 5 + 1 in 
   let die_3 = Random.int 5 + 1 in 

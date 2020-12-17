@@ -17,7 +17,7 @@ let roll_dice_test
     (name : string)
     expected_output : test = 
   name >:: (fun _ ->
-      assert_equal expected_output (check_validity roll_dice)
+      assert_equal expected_output (check_validity (roll_dice ()))
         ~printer:string_of_bool)
 
 let roll_tests = [

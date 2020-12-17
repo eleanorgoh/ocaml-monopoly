@@ -92,4 +92,17 @@ let reset_property (property : t) =
   match property.tile_type with
   | Property ->  change_num_buildings property 0; property
   | Railroad -> change_num_buildings property 4; property
-  | Utility | Tax | Chance_card | Community_chest | Free_parking | Go_to_jail | In_jail_just_visiting | Go -> property
+  | Utility | Tax | Chance_card | Community_chest 
+  | Free_parking | Go_to_jail | In_jail_just_visiting | Go -> property
+
+let string_of_property_type = function 
+  | Property -> "property" 
+  | Railroad -> "railroad" 
+  | Utility -> "utility"
+  | Tax -> "tax"
+  | Chance_card -> "chance card"
+  | Community_chest -> "community chest"
+  | Free_parking -> "free parking"
+  | Go_to_jail -> "go to jail"
+  | In_jail_just_visiting -> "in jail just visiting"
+  | Go -> "go"
