@@ -40,6 +40,17 @@ let mouse_within_tile mouse_x mouse_y =
   in 
   mouse_within_tile_helper mouse_x mouse_y 0 coords
 
+let mouse_in_header mouse_x mouse_y =
+  let rec mouse_within_tile_helper mouse_x mouse_y = function 
+    | [] -> false
+    | (x, y) :: t ->
+      if (mouse_x >= x && mouse_x <= x + 100 
+          && mouse_y >= y + 100 - header_height && mouse_y <= y + 100) 
+      then true
+      else mouse_within_tile_helper mouse_x mouse_y t
+  in 
+  mouse_within_tile_helper mouse_x mouse_y coords
+
 let convert_color = function 
   | Brown -> brown
   | Light_Blue -> light_blue
@@ -256,16 +267,37 @@ let rec render_player_positions rstate posns offset =
       | Some pos ->
         let curr_tile_type = Newboard.get_type board pos in 
         let tile_coords = Stdlib.List.nth coords pos in
+        (* in header / not in jail *)
+        let x' = fst tile_coords + sq_dim / 5 + offset in 
+        let y' = snd tile_coords + sq_dim - header_height / 2 in 
+        (* in center / in jail*)
+        let x'' = fst tile_coords + sq_dim / 5 + offset in 
+        let y'' = snd tile_coords + sq_dim / 2 in 
         (begin 
           match curr_tile_type with 
           | In_jail_just_visiting -> 
-            let x' = fst tile_coords + offset in 
-            let y' = snd tile_coords + sq_dim - header_height in 
-            render_player_pos_helper player (x', y') (* put player in the header *)
+            begin 
+              match player with 
+              | "Circle" -> 
+                if rstate.circle_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Square" -> 
+                if rstate.square_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Triangle" -> 
+                if rstate.triangle_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | "Diamond" -> 
+                if rstate.diamond_jail then 
+                  render_player_pos_helper player (x'', y'')
+                else render_player_pos_helper player (x', y')
+              | _ -> failwith "Somehow got an incorrect player marker type."
+            end
           | _ ->       
-            let x'' = fst tile_coords + sq_dim / 5 + offset in 
-            let y'' = snd tile_coords + sq_dim / 2 in 
-            render_player_pos_helper player (x'', y'') (* put player in center *)
+            render_player_pos_helper player (x'', y'')
         end); render_player_positions rstate t (offset + 2 * padding) 
     end
 
@@ -583,36 +615,48 @@ let process_json json = Newboard.from_json json
 
 let board = "board.json"|> Yojson.Basic.from_file |> process_json 
 
-let handle_first_click rstate func_call = 
+let handle_first_click rstate func_call chng_jail_func = 
   let status' = wait_next_event [Button_down] in 
   let m_x = status'.mouse_x in 
   let m_y = status'.mouse_y in 
   let pos_opt = mouse_within_tile m_x m_y in 
+  let in_header = mouse_in_header m_x m_y in 
   match pos_opt with 
-  | None -> rstate
+  | None -> 
+    let rst' = rstate in 
+    if in_header then chng_jail_func rst' false
+    else chng_jail_func rst' true
   | Some pos -> 
-    func_call pos rstate
+    let rst'' = func_call pos rstate in 
+    if in_header then chng_jail_func rst'' false
+    else chng_jail_func rst'' true
 
 let detect_click rstate =
   let status = wait_next_event [Button_down] in
   if status.mouse_x >= 850 && status.mouse_x <= 950 && status.mouse_y >= 600
      && status.mouse_y <= 640 then 
-    handle_first_click rstate Render_state.add_building_at_pos
+    handle_first_click rstate 
+      Render_state.add_building_at_pos Render_state.change_circle_jail
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 550 && status.mouse_y <= 590 then 
-    handle_first_click rstate Render_state.reset_buildings_at_pos
+    handle_first_click rstate 
+      Render_state.reset_buildings_at_pos Render_state.change_circle_jail
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 500 && status.mouse_y <= 540 then 
-    handle_first_click rstate Render_state.move_circle
+    handle_first_click rstate 
+      Render_state.move_circle Render_state.change_circle_jail
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 450 && status.mouse_y <= 490 then 
-    handle_first_click rstate Render_state.move_diamond
+    handle_first_click rstate 
+      Render_state.move_diamond Render_state.change_diamond_jail
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 400 && status.mouse_y <= 440 then 
-    handle_first_click rstate Render_state.move_square
+    handle_first_click rstate 
+      Render_state.move_square Render_state.change_square_jail
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 350 && status.mouse_y <= 390 then 
-    handle_first_click rstate Render_state.move_triangle
+    handle_first_click rstate 
+      Render_state.move_triangle Render_state.change_triangle_jail
   else rstate
 
 let button coord name = 
