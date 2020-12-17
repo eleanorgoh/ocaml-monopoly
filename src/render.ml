@@ -105,19 +105,19 @@ let draw_building coord scale color =
   let y = snd coord in 
   set_color color;
   fill_poly [|(x, y); (x + 2 * scale, y); (x + 2 * scale, y + scale);
-  (x + scale, y + 2 * scale); (x, y + scale)|]
+              (x + scale, y + 2 * scale); (x, y + scale)|]
 
 let rec draw_buildings num_left coord color = 
   if num_left = 0 then ()
   else 
-  let x' = fst coord + padding + padding / 5 in 
-  let y' = snd coord in 
-  draw_building coord 5 color;
-  draw_buildings (num_left - 1) (x', y') color
+    let x' = fst coord + padding + padding / 5 in 
+    let y' = snd coord in 
+    draw_building coord 5 color;
+    draw_buildings (num_left - 1) (x', y') color
 
 let building_color prop = match Property.get_color prop with 
-| Dark_Blue | Brown -> white 
-| _ -> black
+  | Dark_Blue | Brown -> white 
+  | _ -> black
 
 let draw_tile_property coord prop = 
   let x = fst coord in 
@@ -126,7 +126,7 @@ let draw_tile_property coord prop =
   set_color go_green; fill_rect (fst coord) (snd coord) sq_dim sq_dim;
   fill_header color coord;
   draw_buildings (Property.get_num_buildings prop) (x + padding, 
-  y + sq_dim - header_height + 2 * padding / 3) (building_color prop);
+                                                    y + sq_dim - header_height + 2 * padding / 3) (building_color prop);
   let prop_name = Property.get_name prop in 
   let price = prop |> Property.get_price |> string_of_int in 
   draw_string_in_tile Center coord prop_name (sq_dim / 2) 15;
@@ -221,7 +221,7 @@ let square_marker_centered coord color scale =
   let y = snd coord in 
   set_color color;
   fill_poly [|(x - scale, y - scale); (x - scale, y + scale); 
-  (x + scale, y + scale); (x + scale, y - scale)|]
+              (x + scale, y + scale); (x + scale, y - scale)|]
 
 let circle_marker_centered coord color scale = 
   let x = fst coord in 
@@ -241,7 +241,35 @@ let triangle_marker_centered coord color scale =
   set_color color;
   fill_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|]
 
-let render_player_pos state = failwith "TODO"
+let render_player_pos_helper player coord = 
+  match Player.get_marker_type player with 
+  | "Circle" -> circle_marker_centered coord black 5
+  | "Square" -> square_marker_centered coord black 5
+  | "Triangle" -> triangle_marker_centered coord black 5
+  | "Diamond" -> diamond_marker_centered coord black 5
+  | _ -> failwith "Somehow got an incorrect player marker type."
+
+let rec render_player_positions state offset = function 
+  | [] -> () 
+  | (player, pos) :: t -> 
+    let board = State.get_board state in 
+    let curr_tile_type = Newboard.get_type board pos in 
+    let tile_coords = List.nth coords pos in
+    (begin 
+      match curr_tile_type with 
+      | In_jail_just_visiting -> 
+        let x' = fst tile_coords + offset in 
+        let y' = snd tile_coords + sq_dim - header_height in 
+        render_player_pos_helper player (x', y') (* put player in the header *)
+      | _ ->       
+        let x'' = fst tile_coords + sq_dim / 2 + offset in 
+        let y'' = snd tile_coords + sq_dim / 2 in 
+        render_player_pos_helper player (x'', y'') (* put player in center *)
+    end); render_player_positions state (offset + padding) t
+
+let render_player_positions_from_state state = 
+  let player_pos_lst = State.get_player_pos state in 
+  render_player_positions state padding player_pos_lst
 
 let draw_lightning coord color scale = 
   let x = fst coord in 
@@ -536,6 +564,7 @@ let draw_camel_centerpiece =
   fill_camel white 280. 190. 0.50;
   draw_camel black 280. 190. 0.50
 
+(** Exposed in interface *)
 let draw_board board = 
   let rec loop board coords = match board, coords with 
     | [], [] -> () 
@@ -545,8 +574,16 @@ let draw_board board =
     | _, _ -> failwith "Board size mismatch"
   in loop board coords
 
+(** Exposed in interface *)
+let draw_state state = 
+  let board = State.get_board state in 
+  draw_board board; 
+  render_player_positions_from_state state;
+  draw_monopoly_centerpiece 400 400; 
+  draw_camel_centerpiece
+
 let () = init_window; 
-  try draw_board prop_lst_28; draw_monopoly_centerpiece 400 400; 
+  try draw_board Main.sample_board; draw_monopoly_centerpiece 400 400; 
     draw_camel_centerpiece;
     let rec loop x y  = 
       let _ = wait_next_event [Poll] and wx' = size_x () and wy' = size_y ()
