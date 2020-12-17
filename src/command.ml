@@ -51,6 +51,9 @@ let check_two_arg_input str1 str2 =
     else if str2 = "community" then Draw_Community 
     else raise (Unparsable "Please enter a valid command. 
         Did you mean 'draw chance' or 'draw community'?")
+  | "buy" -> Buy ""
+  | "sell" -> let prop = String.trim str2  in 
+    Sell prop
   | _ -> raise (Unparsable "Please enter a valid command.")
 
 let check_buysell_input str1 prop_begin prop_end = 

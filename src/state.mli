@@ -32,6 +32,11 @@ val player_stat : t -> string
 (** [player_stat game] is the name the tile that the current player is on.*)
 val current_tile : t -> string
 
+(** [view_options game] is a string representing all of the possible actions 
+    the current player can take given their position on the board and the 
+    state of [game]. *)
+val view_options : t -> string 
+
 (** [get_winner game] is the winner of the game if there is one.*)
 val winner : t -> Player.t option
 

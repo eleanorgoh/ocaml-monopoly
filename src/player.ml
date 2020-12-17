@@ -62,11 +62,15 @@ let set_marker_type p marker = {p with marker = marker}
 
 let rec string_helper property_lst result=
   match property_lst with 
-  | [] -> result 
+  | [] ->  String.sub result 0 (String.length result - 2) 
   | h::t -> string_helper t (Property.get_name h ^ ", "  ^ result)
 
 let player_to_string p = 
-  "Player " ^ p.name ^ " (marker: " ^ p.marker ^ " ) has a balance of $" ^ 
-  string_of_int p.money ^ ". They own the following properties: " ^ 
-  string_helper (List.tl p.properties)(Property.get_name (List.hd p.properties))
-  ^ "."
+  let basic_info = 
+    "Player " ^ p.name ^ " (marker: " ^ p.marker ^ ") has a balance of $" ^ 
+    string_of_int p.money ^ ". \n" in 
+  if List.length p.properties = 0 then 
+    basic_info ^ "You do not own any properties right now. \n"
+  else 
+    basic_info ^ "You own the following properties: " ^ 
+    string_helper p.properties "" ^ ". \n"
