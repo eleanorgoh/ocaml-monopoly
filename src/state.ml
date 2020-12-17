@@ -9,6 +9,43 @@ type state = {
 
 type t = state
 
+let print_roll_message () = 
+  print_string ("\n~~~~~~~~~~~~~~~~~~~~" 
+                ^ " Rolling the dice " ^ "~~~~~~~~~~~~~~~~~~~~ \n");
+  print_string("───▄██▄─██��───▄
+─▄██████████��███��
+─▌████████████▌
+▐▐█░█▌░▀████▀░░
+░▐▄▐▄░░░▐▄▐▄░░░░
+" ^ "\n")
+
+let print_pass_go () = 
+  print_string ("Hooray! You passed 'Go'! You will now receive $200. \n\n");
+  print_string (" /$$$$$$   /$$$$$$   /$$$$$$ 
+ /$$__  $$ /$$$_  $$ /$$$_  $$
+|__/  \ $$| $$$$\ $$| $$$$\ $$
+  /$$$$$$/| $$ $$ $$| $$ $$ $$
+ /$$____/ | $$\ $$$$| $$\ $$$$
+| $$      | $$ \ $$$| $$ \ $$$
+| $$$$$$$$|  $$$$$$/|  $$$$$$/
+|________/ \\______/  \\______/ 
+
+                              " ^ "\n")
+
+let print_jail_message () = 
+  print_string ("Unfortunately, you are going to jail. \n\n");
+  print_string 
+    ("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ 
+                                                                        
+██ ██ ██ ██ ██ ██          ██  █████  ██ ██          ██ ██ ██ ██ ██ ██  
+██ ██ ██ ██ ██ ██          ██ ██   ██ ██ ██          ██ ██ ██ ██ ██ ██  
+██ ██ ██ ██ ██ ██          ██ ███████ ██ ██          ██ ██ ██ ██ ██ ██  
+██ ██ ██ ██ ██ ██     ██   ██ ██   ██ ██ ██          ██ ██ ██ ██ ██ ██  
+██ ██ ██ ██ ██ ██      █████  ██   ██ ██ ███████     ██ ██ ██ ██ ██ ██  
+                                                                        
+█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████" ^ "\n")
+
+
 let get_player_pos state : (Player.t * int) list = 
   state.players
 
@@ -101,37 +138,42 @@ let current_tile state =
   Property.get_name (List.nth state.board player_pos)
   ^ ". \n" 
 
+let valid_buy state command str = 
+  let player = fst (List.hd state.players) in 
+  let pos = snd (List.hd state.players) in 
+  let property = List.nth state.board pos in 
+  let property_names = 
+    List.map (fun x -> Property.get_name x) (Player.get_properties player) in
+  let prop = String.capitalize_ascii str |> transform_hyphen_str in 
+  if Property.get_num_buildings property < 5 
+  && Property.get_price property <= Player.get_money player
+  && not (List.mem prop property_names)
+  then true else false
+
+let valid_sell state command str = 
+  let player = fst (List.hd state.players) in 
+  let pos = snd (List.hd state.players) in 
+  let curr_prop = List.nth state.board pos in 
+  let property_names = 
+    List.map (fun x -> Property.get_name x) (Player.get_properties player) in
+  let prop = String.capitalize_ascii str |> transform_hyphen_str in 
+  if (Property.get_name curr_prop = prop 
+      && List.mem (Property.get_name curr_prop) property_names)
+  || List.mem prop property_names
+  then true else false
+
 let valid_command state (command : Command.t) = 
   match command with 
   | End_Turn ->  true
   | Forfeit -> true
   | Roll -> if state.num_rolls = 0 then true else false
-  | Buy s -> 
-    let player = fst (List.hd state.players) in 
-    let pos = snd (List.hd state.players) in 
-    let property = List.nth state.board pos in 
-    let property_names = 
-      List.map (fun x -> Property.get_name x) (Player.get_properties player) in
-    let prop = String.capitalize_ascii s |> transform_hyphen_str in 
-    if Property.get_num_buildings property < 5 
-    && Property.get_price property <= Player.get_money player
-    && not (List.mem prop property_names)
-    then true else false
+  | Buy s -> valid_buy state command s
 
-  | Sell s -> 
-    let player = fst (List.hd state.players) in 
-    let pos = snd (List.hd state.players) in 
-    let curr_prop = List.nth state.board pos in 
-    let property_names = 
-      List.map (fun x -> Property.get_name x) (Player.get_properties player) in
-    let prop = String.capitalize_ascii s |> transform_hyphen_str in 
-
-    if (Property.get_name curr_prop = prop && List.mem (Property.get_name curr_prop) property_names)
-    || List.mem prop property_names
-    then true else false
+  | Sell s -> valid_sell state command s
   | Quit -> true
   | Collect (s1, s2, s3) -> failwith "Unimplemented collect"
   | _ -> failwith "Command should not have been run/DNE."
+
 
 let rec options_helper state (lst : Command.t list) str = 
   match lst with 
@@ -141,12 +183,12 @@ let rec options_helper state (lst : Command.t list) str =
     then options_helper state t (Command.to_string h ^ ", " ^ str) 
     else options_helper state t str
 
-let get_all_other_prop_options (other_properties : string list ) (prop : string) : Command.t list = 
+let get_all_other_prop_options other_properties prop  = 
   let rec loop acc prop = function 
     | [] -> acc 
     | h :: t -> 
       if h <> prop then loop (acc @ [Command.Buy h; Command.Sell h]) prop t
-      else loop acc prop t 
+      else loop (acc @ [Command.Buy ("Building")]) prop t 
   in loop [] prop other_properties
 
 let view_options state = 
@@ -164,11 +206,6 @@ let view_options state =
 
 let move_card_to_bottom lst = (List.tl lst)@[List.hd lst]
 
-let rec check_cards (state : t) : bool * t = failwith ""
-
-let get_out_of_jail (state : t) : t = failwith "TODO"
-
-
 let rec tile_pos board tile_name : int= 
   match board with
   | [] -> failwith "Tile not found"
@@ -177,10 +214,7 @@ let rec tile_pos board tile_name : int=
 
 let rec handle_command state (command : Command.t)  = 
   match command with 
-  | End_Turn ->
-    let curr_player = List.hd state.players in 
-    let new_lst = (List.tl state.players)@[curr_player] in 
-    {state with players = new_lst; num_rolls = 0}
+  | End_Turn -> handle_end_turn state command 
   | Forfeit -> {
       players = List.tl state.players;
       board = Newboard.reset_properties (state.board) 
@@ -189,185 +223,159 @@ let rec handle_command state (command : Command.t)  =
       community_stack = state.community_stack;
       num_rolls = 0;
     }
-  | Buy s -> 
-    let player = fst (List.hd state.players) in 
-    let pos = snd (List.hd state.players) in 
-    let property = List.nth state.board pos in
-    begin
-      match Player.get_property_by_name player (Property.get_name property) with 
-      | None -> let updated_player = Action.buy_property property player in 
-        print_string ("Buying the following property: " ^ 
-                      (Property.get_name property) ^ "!\n");
-        {state with players = (updated_player, pos)::List.tl state.players}
-      | Some prop -> Action.buy_building property player; 
-        print_string ("Buying a building on the following property: " 
-                      ^ (Property.get_name property) ^ "!\n");
-        state
-    end
-  | Sell s -> 
-    let player = fst (List.hd state.players) in 
-    let pos = snd (List.hd state.players) in 
-    let prop = String.capitalize_ascii s |> transform_hyphen_str in 
-
-    begin
-      match Player.get_property_by_name player (prop) with 
-      | None -> failwith "Does not own property"
-      | Some p ->
-        let updated_player = Action.sell_property p player in 
-        print_string ("Selling the following property: " ^ 
-                      (prop) ^ "!\n");
-        {state with players = (updated_player, pos)::List.tl state.players}
-    end
+  | Buy s -> handle_buy state command s
+  | Sell s -> handle_sell state command s
   | Roll -> 
     let roll = Action.roll_dice () in roll_helper roll state
   | Quit -> state
   | _ -> failwith "Command should not have been run/DNE."
 
+and handle_end_turn state command = 
+  let curr_player = List.hd state.players in 
+  let new_lst = (List.tl state.players)@[curr_player] in 
+  {state with players = new_lst; num_rolls = 0}
+
+and handle_buy state command str = 
+  let player = fst (List.hd state.players) in 
+  let pos = snd (List.hd state.players) in 
+  let property = List.nth state.board pos in
+  begin
+    match Player.get_property_by_name player (Property.get_name property) with 
+    | None -> let updated_player = Action.buy_property property player in 
+      print_string ("Buying the following property: " ^ 
+                    (Property.get_name property) ^ "!\n");
+      {state with players = (updated_player, pos)::List.tl state.players}
+    | Some prop -> Action.buy_building property player; 
+      print_string ("Buying a building on the following property: " 
+                    ^ (Property.get_name property) ^ "!\n");
+      state
+  end
+
+and handle_sell state command str = 
+  let player = fst (List.hd state.players) in 
+  let pos = snd (List.hd state.players) in 
+  let prop = String.capitalize_ascii str |> transform_hyphen_str in 
+
+  begin
+    match Player.get_property_by_name player (prop) with 
+    | None -> failwith "Does not own property"
+    | Some p ->
+      let updated_player = Action.sell_property p player in 
+      print_string ("Selling the following property: " ^ 
+                    (prop) ^ "!\n");
+      {state with players = (updated_player, pos)::List.tl state.players}
+  end
+
+
 and roll_helper (roll: Action.t) state = 
   match roll with 
-  | Step x -> 
-    let player = fst (List.hd state.players) in
-    let old_pos = snd (List.hd state.players) in 
-    let pos = (old_pos + x) mod (List.length state.board) in 
-    let new_state = 
-      {state with players = (player, pos)::List.tl state.players} in
-    print_string ("\n~~~~~~~~~~~~~~~~~~~~" 
-                  ^ " Rolling the dice " ^ "~~~~~~~~~~~~~~~~~~~~ \n");
-    print_string("───▄██▄─██��───▄
-─▄██████████��███��
-─▌████████████▌
-▐▐█░█▌░▀████▀░░
-░▐▄▐▄░░░▐▄▐▄░░░░
-" ^ "\n");
-
-    print_string ("After rolling, you are moving " ^ 
-                  (string_of_int x) ^ " steps forward. \n\n");
-
-    if old_pos > pos && pos <> 0 then 
-      let balance = Player.get_money player in 
-      Player.set_money player (balance + 200); 
-      print_string ("Hooray! You passed 'Go'! You will now receive $200. \n\n");
-      print_string (" /$$$$$$   /$$$$$$   /$$$$$$ 
- /$$__  $$ /$$$_  $$ /$$$_  $$
-|__/  \ $$| $$$$\ $$| $$$$\ $$
-  /$$$$$$/| $$ $$ $$| $$ $$ $$
- /$$____/ | $$\ $$$$| $$\ $$$$
-| $$      | $$ \ $$$| $$ \ $$$
-| $$$$$$$$|  $$$$$$/|  $$$$$$/
-|________/ \\______/  \\______/ 
-
-                              " ^ "\n");
-    else print_string ("");
-
-    let board = state.board in 
-    let property = List.nth board pos in
-    advance_helper new_state property
-  | Jail -> 
-    let player = fst (List.hd state.players) in
-    let pos = tile_pos state.board "Jail" in 
-
-    print_string ("Unfortunately, you are going to jail. \n\n");
-    print_string ("█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ 
-                                                                        
-██ ██ ██ ██ ██ ██          ██  █████  ██ ██          ██ ██ ██ ██ ██ ██  
-██ ██ ██ ██ ██ ██          ██ ██   ██ ██ ██          ██ ██ ██ ██ ██ ██  
-██ ██ ██ ██ ██ ██          ██ ███████ ██ ██          ██ ██ ██ ██ ██ ██  
-██ ██ ██ ██ ██ ██     ██   ██ ██   ██ ██ ██          ██ ██ ██ ██ ██ ██  
-██ ██ ██ ██ ██ ██      █████  ██   ██ ██ ███████     ██ ██ ██ ██ ██ ██  
-                                                                        
-█████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████ █████" ^ "\n");
-
-
-    if Player.has_jail_card player then 
-      let () = print_string ("BUT, you have a 'Get Out Of Jail' card! Using that card now. \n") in 
-      let new_player = Player.use_jail_card player in 
-
-      {
-        players = (new_player, pos)::List.tl state.players;
-        board = state.board;
-        chance_stack = state.chance_stack;
-        community_stack = state.community_stack;
-        num_rolls = 0;
-      }
-
-    else 
-      {
-        players = (player, pos)::List.tl state.players;
-        board = state.board;
-        chance_stack = state.chance_stack;
-        community_stack = state.community_stack;
-        num_rolls = 1;
-      } 
-
+  | Step x -> roll_step_helper state x
+  | Jail -> roll_jail_helper state
   | Draw_Chance | Draw_Community -> failwith "Impossible"
+
+and roll_step_helper state steps = 
+  let player = fst (List.hd state.players) in
+  let old_pos = snd (List.hd state.players) in 
+  let pos = (old_pos + steps) mod (List.length state.board) in 
+  let new_state = 
+    {state with players = (player, pos)::List.tl state.players} in
+  print_roll_message ();
+  print_string ("After rolling, you are moving " ^ 
+                (string_of_int steps) ^ " steps forward. \n\n");
+  if old_pos > pos && pos <> 0 then 
+    let balance = Player.get_money player in 
+    Player.set_money player (balance + 200); 
+    print_pass_go ();
+  else print_string ("");
+  let board = state.board in 
+  let property = List.nth board pos in
+  advance_helper new_state property
+
+and roll_jail_helper state = 
+  let player = fst (List.hd state.players) in
+  let pos = tile_pos state.board "Go_to_jail" in 
+  print_jail_message ();
+  if Player.has_jail_card player then 
+    let () = print_string 
+        ("BUT, you have a 'Get Out Of Jail' card! Using that card now. \n") in 
+    let new_player = Player.use_jail_card player in 
+    {
+      players = (new_player, pos)::List.tl state.players;
+      board = state.board;
+      chance_stack = state.chance_stack;
+      community_stack = state.community_stack;
+      num_rolls = 0;
+    }
+  else 
+    {
+      players = (player, pos)::List.tl state.players;
+      board = state.board;
+      chance_stack = state.chance_stack;
+      community_stack = state.community_stack;
+      num_rolls = 1;
+    } 
 
 and card_helper card state = 
   let player = fst (List.hd state.players) in 
   match Cc_card.get_action card with
-  | Pay x -> 
-    let balance = Player.get_money player in 
-    Player.set_money player (balance - x); 
-    print_string ("This card says you have to pay the bank $" 
-                  ^ string_of_int x ^ " :(. \n");
-    print_string ("Your balance is now: $" 
-                  ^ string_of_int (Player.get_money player) ^ "\n");
-    state
-  | Receive x -> 
-    let balance = Player.get_money player in 
-    Player.set_money player (balance + x);
-    print_string ("It's your lucky day! " ^ "This card says you receive $" 
-                  ^ string_of_int x ^ " from the bank. \n");
-    print_string ("Your balance is now: $" 
-                  ^ string_of_int (Player.get_money player) ^ "\n");
-    state
-  | OutJail -> 
-    print_string ("This card gives you a 'Get Out Of Jail' card! \n");
-    let pos = snd (List.hd state.players) in 
-    let update_player = Player.receive_jail_card player in 
-    {state with players = (update_player, pos)::List.tl state.players}
-  | GoJail -> 
-    print_string ("Rip. This card says you're going to jail. \n");
-    let pos = tile_pos state.board "Go_to_jail" in 
-    if Player.has_jail_card player then 
-      let () = print_string ("BUT, you have a 'Get Out Of Jail' card! Using that card now. \n") in 
-      let new_player = Player.use_jail_card player in 
-      {state with players = (new_player, pos)::List.tl state.players}
-    else 
-      {state with players = (player, pos)::List.tl state.players}
-  | Advance s -> 
-    print_string ("This card says you get to advance to " ^ s ^ "! \n");
-    let pos = tile_pos state.board s in 
-    let new_state = 
-      {state with players = (player, pos)::List.tl state.players} in
-    let property = List.nth new_state.board pos in 
-    advance_helper new_state property
+  | Pay x -> pay_helper card state player x
+  | Receive x -> receive_helper card state player x
+  | OutJail -> out_jail_helper card state player
+  | GoJail -> go_jail_helper card state player
+  | Advance s -> advance_pre_helper card state player s
+
+and pay_helper card state player amt = 
+  let balance = Player.get_money player in 
+  Player.set_money player (balance - amt); 
+  print_string ("This card says you have to pay the bank $" 
+                ^ string_of_int amt ^ " :(. \n");
+  print_string ("Your balance is now: $" 
+                ^ string_of_int (Player.get_money player) ^ "\n");
+  state
+
+and receive_helper card state player amt = 
+  let balance = Player.get_money player in 
+  Player.set_money player (balance + amt);
+  print_string ("It's your lucky day! " ^ "This card says you receive $" 
+                ^ string_of_int amt ^ " from the bank. \n");
+  print_string ("Your balance is now: $" 
+                ^ string_of_int (Player.get_money player) ^ "\n");
+  state
+
+and out_jail_helper card state player = 
+  print_string ("This card gives you a 'Get Out Of Jail' card! \n");
+  let pos = snd (List.hd state.players) in 
+  let update_player = Player.receive_jail_card player in 
+  {state with players = (update_player, pos)::List.tl state.players}
+
+and go_jail_helper card state player = 
+  print_string ("Rip. This card says you're going to jail. \n");
+  let pos = tile_pos state.board "Go_to_jail" in 
+  if Player.has_jail_card player then 
+    let () = print_string 
+        ("BUT, you have a 'Get Out Of Jail' card! Using that card now. \n") in 
+    let new_player = Player.use_jail_card player in 
+    {state with players = (new_player, pos)::List.tl state.players}
+  else 
+    {state with players = (player, pos)::List.tl state.players}
+
+and advance_pre_helper card state player str = 
+  print_string ("This card says you get to advance to " ^ str ^ "! \n");
+  let pos = tile_pos state.board str in 
+  let new_state = 
+    {state with players = (player, pos)::List.tl state.players} in
+  let property = List.nth new_state.board pos in 
+  advance_helper new_state property
 
 and advance_helper state property = 
   match Property.get_type property with 
   | Property | Railroad | Utility -> 
-    print_string ("You landed on a " 
-                  ^ Property.string_of_property_type 
-                    (Property.get_type property) ^ " tile. \n");
-    get_charged state property
-  | Tax -> 
-    print_string ("You landed on a Tax tile. \n");
-    let player = fst (List.hd state.players) in 
-    let tax_amount = Property.get_rent_cost property in 
-    let balance = Player.get_money player in 
-    Player.set_money player (balance - tax_amount); 
-    print_string ("You are being taxed $" 
-                  ^ string_of_int tax_amount ^ " by the bank. \n");
-    state
+    handle_prop_util_rroad state property
+  | Tax -> handle_tax state property
   | Chance_card -> 
-    print_string ("You landed on a Chance Card! \n");
-    let card = List.hd state.chance_stack in 
-    let new_state = card_helper card state in 
-    {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+    handle_chance_card state property
   | Community_chest -> 
-    print_string ("You landed on a Community Chest Card! \n");
-    let card = List.hd state.chance_stack in 
-    let new_state = card_helper card state in 
-    {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+    handle_community_chest state property
   | Go_to_jail -> 
     print_string 
       ("RIP. You landed on a 'Go To Jail' tile... \n");
@@ -376,12 +384,42 @@ and advance_helper state property =
             ("You landed on 'Go'! Back to square one now. \n");
     state
   | In_jail_just_visiting -> 
-    print_string ("You landed in jail... but thank goodness you're just visiting!");
+    print_string 
+      ("You landed in jail... but thank goodness you're just visiting!");
     state 
   | Free_parking -> 
     print_string ("You landed on a free parking space! \n");
     print_string ("You can just sit back and chill. \n");
     state 
+
+and handle_prop_util_rroad state property = 
+  print_string ("You landed on a " 
+                ^ Property.string_of_property_type 
+                  (Property.get_type property) ^ " tile. \n");
+  get_charged state property
+
+and handle_tax state property = 
+  print_string ("You landed on a Tax tile. \n");
+  let player = fst (List.hd state.players) in 
+  let tax_amount = Property.get_rent_cost property in 
+  let balance = Player.get_money player in 
+  Player.set_money player (balance - tax_amount); 
+  print_string ("You are being taxed $" 
+                ^ string_of_int tax_amount ^ " by the bank. \n");
+  state
+
+and handle_chance_card state property = 
+  print_string ("You landed on a Chance Card! \n");
+  let card = List.hd state.chance_stack in 
+  let new_state = card_helper card state in 
+  {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+
+and handle_community_chest state property = 
+  print_string ("You landed on a Community Chest Card! \n");
+  let card = List.hd state.chance_stack in 
+  let new_state = card_helper card state in 
+  {new_state with chance_stack = move_card_to_bottom new_state.chance_stack}
+
 
 and player_owns player property = 
   let property_name = Property.get_name property in 

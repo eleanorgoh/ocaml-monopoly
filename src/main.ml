@@ -17,14 +17,15 @@ let opening_message = "\n\n
 ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═╝
                                                                          \n"
 
-let start_message = "\n\n" ^ 
-                    "███████╗████████╗ █████╗ ██████╗ ████████╗██╗███╗   ██╗ ██████╗      ██████╗  █████╗ ███╗   ███╗███████╗
-██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██║████╗  ██║██╔════╝     ██╔════╝ ██╔══██╗████╗ ████║██╔════╝
-███████╗   ██║   ███████║██████╔╝   ██║   ██║██╔██╗ ██║██║  ███╗    ██║  ███╗███████║██╔████╔██║█████╗  
-╚════██║   ██║   ██╔══██║██╔══██╗   ██║   ██║██║╚██╗██║██║   ██║    ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  
-███████║   ██║   ██║  ██║██║  ██║   ██║   ██║██║ ╚████║╚██████╔╝    ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗
-╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝      ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
-                                                                                                        \n"
+
+let start_message = "\n███████╗████████╗ █████╗ ██████╗ ████████╗
+██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝
+███████╗   ██║   ███████║██████╔╝   ██║   
+╚════██║   ██║   ██╔══██║██╔══██╗   ██║   
+███████║   ██║   ██║  ██║██║  ██║   ██║   
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   
+                                          \n"
+
 
 let end_message = "\n\n" ^ 
                   " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ 
@@ -73,7 +74,7 @@ let parse_int input =
 let rec check_player_num feedback = 
   ANSITerminal.(print_string [default] 
                   ("" ^ feedback));
-  print_string ("Choose the number of players in the game: there must be at least 2 players, and the max number is 4. \n If you want 3 players, enter '3'. \n");
+  print_string ("Choose the number of players in the game: there must be at least 2 players, and the max number is 4. \nIf you want 3 players, enter '3'. \n");
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> raise Empty
@@ -119,6 +120,11 @@ let rec collect_player_info curr total acc names markers =
 
 let end_game message = print_string message; Stdlib.exit 0
 
+let print_info state = 
+  print_string(current_tile state);
+  print_string(view_options state);
+  print_string("What would you like to do? \n")
+
 let rec handle_turn feedback state = 
   ANSITerminal.(print_string [default] 
                   ("" ^ feedback));
@@ -133,26 +139,22 @@ let rec handle_turn feedback state =
         handle_turn (Command.to_string command 
                      ^ " is not a valid command for you at this moment in the game. Enter another command. \n") 
           state 
-      else let state_after_command = handle_command state command in 
-        begin
-          if command = Command.End_Turn 
-          || command = Command.Forfeit 
-          || command = Command.Quit then (state_after_command, command)
-          else 
-
-            (* TODO: UPDATE GRAPHICS HERE *)
-            let updated_board = get_board state_after_command in 
-            let options = view_options state_after_command |> filter_options in 
-
-            handle_turn ("\n" ^ current_tile state_after_command 
-                         ^ player_stat state_after_command 
-                         ^ "\n" ^ options 
-                         ^ "What would you like to do next? \n\n") 
-              state_after_command 
-        end
-
+      else handle_valid_command state command
     with 
     | Command.Unparsable s -> handle_turn (s ^ "\n") state 
+
+and handle_valid_command state command = 
+  let state_after_command = handle_command state command in 
+  if command = Command.End_Turn || command = Command.Forfeit 
+     || command = Command.Quit then (state_after_command, command)
+  else 
+    let options = view_options state_after_command |> filter_options in 
+    handle_turn ("\n" ^ current_tile state_after_command 
+                 ^ player_stat state_after_command 
+                 ^ "\n" ^ options 
+                 ^ "What would you like to do next? \n\n") 
+      state_after_command 
+
 
 let rec play_game state = 
   match winner state with 
@@ -164,48 +166,48 @@ let rec play_game state =
     print_string ("************************************************** \n" 
                   ^ "* Type 'quit' at any point to end the game. \n\n" ^ 
                   player_stat state ^ "\n");
-
-    (* TODO: UPDATE GRAPHICS HERE *)
-    let updated_board = get_board state in 
-
-    print_string(current_tile state);
-    print_string(view_options state);
-    print_string("What would you like to do? \n");
-
+    print_info state;
     let turn_result = handle_turn "" state in 
     let state_after_turn = fst turn_result in 
     let command_after_turn = snd turn_result in 
-    let output = begin
-      match command_after_turn with 
-      | Command.Forfeit -> "You have forfeited the game. \n\n"
-      | Command.End_Turn -> "You have ended your turn. \n\n"
-      | _ -> ""
-    end
+    let output = output_of_command command_after_turn 
     in print_string output;
     if command_after_turn = Command.Quit 
     then end_game end_message
     else play_game state_after_turn
 
+and output_of_command (command : Command.t) : string = 
+  match command with 
+  | Command.Forfeit -> "You have forfeited the game. \n\n"
+  | Command.End_Turn -> "You have ended your turn. \n\n"
+  | _ -> ""
+
 
 let init_game board = 
   let num_players = check_player_num "" in 
   let all_player_info = collect_player_info 1 num_players [] [] 
-      ["Circle"; "Star"; "Square"; "Triangle"] in 
+      ["Circle"; "Diamond"; "Square"; "Triangle"] in 
   let state = init_state board all_player_info in 
   print_string start_message;
   play_game state 
 
 let start_game f =
-  if Sys.file_exists f then 
-    Yojson.Basic.from_file f |> process_json |> init_game
+  let file = String.trim f in 
+  if file = "" then 
+    let () = print_string ("You have chosen to use the default board.\n\n") in 
+    Yojson.Basic.from_file "board.json" |> process_json |> init_game
+  else if Sys.file_exists f then 
+    let () = print_string ("You have chosen to use the custom board \"" 
+                           ^ file ^ "\". \n\n" ) in 
+    Yojson.Basic.from_file file |> process_json |> init_game
   else print_string ("The file \"" ^ 
-                     f ^ "\" does not exist. Create this file or try using a different one.\n");
+                     file ^ "\" does not exist. Create this file or try using a different one.\n");
   flush stdout
 
 let main () =
   ANSITerminal.(print_string [cyan] "");
   print_string opening_message;
-  print_endline "Please enter the name of the game file you want to load.\n";
+  print_endline "To use a custom board, enter the name of the board file you want to load.\nTo use the default Cornell board, just press 'Enter'.";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
