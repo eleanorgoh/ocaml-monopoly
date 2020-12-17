@@ -40,34 +40,6 @@ let mouse_within_tile mouse_x mouse_y =
   in 
   mouse_within_tile_helper mouse_x mouse_y 0 coords
 
-let prop_0 = init_property 1 "PSB" Light_Blue Property 0 1 2 3 4 5 10 20 0
-let prop_1 = init_property 0 "PSB" Green Property 0 1 2 3 4 5 1 1 1
-let prop_2 = init_property 0 "Home" Yellow Property 0 1 2 3 4 5 1 1 2
-let prop_3 = init_property 0 "Slope" Dark_Blue Property 0 1 2 3 4 5 1 1 3
-let prop_4 = init_property 0 "Line 92" Red Railroad 0 1 2 3 4 5 0 1 4
-let prop_5 = init_property 0 "Mac's" Red Property 0 1 2 3 4 5 1 9999 5
-let prop_6 = init_property 0 "Terrace" Pink Community_chest 1 1 1 1 1 1 1 9999 0
-let prop_7 = init_property 0 "Sage" Brown Go_to_jail 1 1 1 1 1 1 1 10 2
-let prop_8 = init_property 
-    0 "Expensive Rent" Green Property 9999 9999 9999 9999 9999 9999 9999 10 0
-let prop_9 = init_property 0 "Olin" Pink Chance_card 1 1 1 1 1 1 1 10 4
-let prop_10 = init_property 0 "Libe" Orange Property 0 0 0 1 1 1 0 0 1
-
-let go_prop = init_property 1 "GO" Light_Blue Go 0 1 2 3 4 5 10 20 0
-let tax_prop = init_property 1 "GO" Light_Blue Tax 0 1 2 3 4 5 10 20 0
-let in_jail_prop = 
-  init_property 1 "GO" Light_Blue In_jail_just_visiting 0 1 2 3 4 5 10 20 0
-let free_parking_prop = 
-  init_property 1 "GO" Light_Blue Free_parking 0 1 2 3 4 5 10 20 0
-let utility_prop = init_property 1 "GO" Light_Blue Utility 0 1 2 3 4 5 10 20 0
-
-let prop_lst_28 = [
-  go_prop; prop_0; prop_1; prop_2; prop_3; prop_4; prop_5; 
-  prop_6; utility_prop; prop_8; prop_9; prop_10; prop_0; prop_1; 
-  in_jail_prop; prop_3; prop_4; prop_5; tax_prop; prop_7; prop_8; 
-  prop_9; free_parking_prop; prop_4; prop_1; prop_2; prop_3; prop_5
-]
-
 let convert_color = function 
   | Brown -> brown
   | Light_Blue -> light_blue
@@ -267,10 +239,10 @@ let triangle_marker_centered coord color scale =
 
 let render_player_pos_helper player coord = 
   match player with 
-  | "Circle" -> circle_marker_centered coord cyan 8
-  | "Square" -> square_marker_centered coord cyan 8
-  | "Triangle" -> triangle_marker_centered coord magenta 8
-  | "Diamond" -> diamond_marker_centered coord magenta 8
+  | "Circle" -> circle_marker_centered coord cyan 10
+  | "Square" -> square_marker_centered coord cyan 10
+  | "Triangle" -> triangle_marker_centered coord magenta 10
+  | "Diamond" -> diamond_marker_centered coord magenta 10
   | _ -> failwith "Somehow got an incorrect player marker type."
 
 let rec render_player_positions rstate posns offset = 
