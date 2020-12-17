@@ -230,8 +230,10 @@ let square_marker_centered coord color scale =
   fill_poly [|(x - scale, y - scale); (x - scale, y + scale); 
               (x + scale, y + scale); (x + scale, y - scale)|];
   set_color black;
+  set_line_width 3;
   draw_poly [|(x - scale, y - scale); (x - scale, y + scale); 
-              (x + scale, y + scale); (x + scale, y - scale)|]
+              (x + scale, y + scale); (x + scale, y - scale)|];
+  set_line_width 1
 
 let circle_marker_centered coord color scale = 
   let x = fst coord in 
@@ -239,7 +241,9 @@ let circle_marker_centered coord color scale =
   set_color color;
   fill_circle x y scale;
   set_color black;
-  draw_circle x y scale
+  set_line_width 3;
+  draw_circle x y scale;
+  set_line_width 1
 
 let diamond_marker_centered coord color scale = 
   let x = fst coord in 
@@ -247,7 +251,9 @@ let diamond_marker_centered coord color scale =
   set_color color;
   fill_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|];
   set_color black;
-  draw_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|]
+  set_line_width 3;
+  draw_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|];
+  set_line_width 1
 
 let triangle_marker_centered coord color scale = 
   let x = fst coord in 
@@ -255,37 +261,44 @@ let triangle_marker_centered coord color scale =
   set_color color;
   fill_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|];
   set_color black;
-  draw_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|]
+  set_line_width 3;
+  draw_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|];
+  set_line_width 1
 
 let render_player_pos_helper player coord = 
-  match Player.get_marker_type player with 
-  | "Circle" -> circle_marker_centered coord white 8
-  | "Square" -> square_marker_centered coord white 8
-  | "Triangle" -> triangle_marker_centered coord white 8
-  | "Diamond" -> diamond_marker_centered coord white 8
+  match player with 
+  | "Circle" -> circle_marker_centered coord cyan 8
+  | "Square" -> square_marker_centered coord cyan 8
+  | "Triangle" -> triangle_marker_centered coord magenta 8
+  | "Diamond" -> diamond_marker_centered coord magenta 8
   | _ -> failwith "Somehow got an incorrect player marker type."
 
-let rec render_player_positions state offset = function 
+let rec render_player_positions rstate posns offset = 
+  match posns with 
   | [] -> () 
   | (player, pos) :: t -> 
-    let board = State.get_board state in 
-    let curr_tile_type = Newboard.get_type board pos in 
-    let tile_coords = Stdlib.List.nth coords pos in
-    (begin 
-      match curr_tile_type with 
-      | In_jail_just_visiting -> 
-        let x' = fst tile_coords + offset in 
-        let y' = snd tile_coords + sq_dim - header_height in 
-        render_player_pos_helper player (x', y') (* put player in the header *)
-      | _ ->       
-        let x'' = fst tile_coords + sq_dim / 5 + offset in 
-        let y'' = snd tile_coords + sq_dim / 2 in 
-        render_player_pos_helper player (x'', y'') (* put player in center *)
-    end); render_player_positions state (offset + 2 * padding) t
+    let board = Render_state.get_board rstate in 
+    begin 
+      match pos with 
+      | None -> render_player_positions rstate t offset
+      | Some pos ->
+        let curr_tile_type = Newboard.get_type board pos in 
+        let tile_coords = Stdlib.List.nth coords pos in
+        (begin 
+          match curr_tile_type with 
+          | In_jail_just_visiting -> 
+            let x' = fst tile_coords + offset in 
+            let y' = snd tile_coords + sq_dim - header_height in 
+            render_player_pos_helper player (x', y') (* put player in the header *)
+          | _ ->       
+            let x'' = fst tile_coords + sq_dim / 5 + offset in 
+            let y'' = snd tile_coords + sq_dim / 2 in 
+            render_player_pos_helper player (x'', y'') (* put player in center *)
+        end); render_player_positions rstate t (offset + 2 * padding) 
+    end
 
-let render_player_positions_from_state state = 
-  let player_pos_lst = State.get_player_pos state in 
-  render_player_positions state 0 player_pos_lst
+let render_player_positions_from_state rstate = 
+  render_player_positions rstate (Render_state.lst_posns rstate) 0
 
 let draw_lightning coord color scale = 
   let x = fst coord in 
@@ -589,10 +602,10 @@ let draw_board board =
     | _, _ -> failwith "Board size mismatch"
   in loop board coords
 
-let draw_state state = 
-  let board = Render_state.get_board state in 
-  draw_board board
-(* render_player_positions_from_state state *)
+let draw_state rstate = 
+  let board = Render_state.get_board rstate in 
+  draw_board board;
+  render_player_positions_from_state rstate
 
 let process_json json = Newboard.from_json json
 
@@ -606,7 +619,7 @@ let handle_first_click rstate func_call =
   match pos_opt with 
   | None -> rstate
   | Some pos -> 
-    func_call pos rstate; rstate
+    func_call pos rstate
 
 let detect_click rstate =
   let status = wait_next_event [Button_down] in
