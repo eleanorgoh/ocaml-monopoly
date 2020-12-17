@@ -582,6 +582,16 @@ let draw_state state =
   draw_monopoly_centerpiece 400 400; 
   draw_camel_centerpiece
 
+(** Exposed in interface *)
+let wait =     
+  try
+    let rec loop x y  = 
+      let _ = wait_next_event [Poll] and wx' = size_x () and wy' = size_y ()
+      in loop wx' wy'
+    in 
+    loop 0 0 
+  with Graphic_failure _ -> print_endline "Exiting... Thanks for playing!"
+
 let () = init_window; 
   try draw_board Main.sample_board; draw_monopoly_centerpiece 400 400; 
     draw_camel_centerpiece;
