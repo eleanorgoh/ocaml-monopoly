@@ -9,9 +9,8 @@ type state = {
 
 type t = state
 
-let get_player_pos state : (string * int) list = 
-  let players = state.players in 
-  List.map (fun (x,y) -> (Player.get_name x, y)) players
+let get_player_pos state : (Player.t * int) list = 
+  state.players
 
 let create_card (category : Cc_card.category) (board : Newboard.t)= 
   let names = Newboard.get_names board in 
