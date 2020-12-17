@@ -636,11 +636,11 @@ let detect_click rstate =
   if status.mouse_x >= 850 && status.mouse_x <= 950 && status.mouse_y >= 600
      && status.mouse_y <= 640 then 
     handle_first_click rstate 
-      Render_state.add_building_at_pos Render_state.change_circle_jail
+      Render_state.add_building_at_pos (fun rst bool -> rst)
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 550 && status.mouse_y <= 590 then 
     handle_first_click rstate 
-      Render_state.reset_buildings_at_pos Render_state.change_circle_jail
+      Render_state.reset_buildings_at_pos (fun rst bool -> rst)
   else if status.mouse_x >= 850 && status.mouse_x <= 950 
           && status.mouse_y >= 500 && status.mouse_y <= 540 then 
     handle_first_click rstate 
