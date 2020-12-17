@@ -1,6 +1,5 @@
 open Graphics
 open Property
-open State
 
 let init_window = 
   open_graph ""; 
@@ -101,10 +100,33 @@ let draw_string_in_tile pos coord str y_height size =
   set_text_size size;
   draw_string str
 
+let draw_building coord scale color = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y); (x + 2 * scale, y); (x + 2 * scale, y + scale);
+  (x + scale, y + 2 * scale); (x, y + scale)|]
+
+let rec draw_buildings num_left coord color = 
+  if num_left = 0 then ()
+  else 
+  let x' = fst coord + padding + padding / 5 in 
+  let y' = snd coord in 
+  draw_building coord 5 color;
+  draw_buildings (num_left - 1) (x', y') color
+
+let building_color prop = match Property.get_color prop with 
+| Dark_Blue | Brown -> white 
+| _ -> black
+
 let draw_tile_property coord prop = 
+  let x = fst coord in 
+  let y = snd coord in 
   let color = prop |> Property.get_color |> convert_color in 
   set_color go_green; fill_rect (fst coord) (snd coord) sq_dim sq_dim;
   fill_header color coord;
+  draw_buildings (Property.get_num_buildings prop) (x + padding, 
+  y + sq_dim - header_height + 2 * padding / 3) (building_color prop);
   let prop_name = Property.get_name prop in 
   let price = prop |> Property.get_price |> string_of_int in 
   draw_string_in_tile Center coord prop_name (sq_dim / 2) 15;
@@ -194,31 +216,32 @@ let draw_tile_tax coord prop =
   draw_tax (x + 2 * padding, y + sq_dim / 2 - 8) 3 black;
   draw_string_in_tile Center coord ("Pay $200") (sq_dim / 7) 8
 
-let square_marker coord color scale = failwith "TODO"
+let square_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x - scale, y - scale); (x - scale, y + scale); 
+  (x + scale, y + scale); (x + scale, y - scale)|]
 
-let circle_marker coord color scale = failwith "TODO"
+let circle_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_circle x y scale
 
-let star_marker coord color scale = failwith "TODO"
+let diamond_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x, y - scale); (x - scale, y); (x, y + scale); (x + scale, y)|]
 
-let triangle_marker coord color scale = failwith "TODO"
+let triangle_marker_centered coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in 
+  set_color color;
+  fill_poly [|(x - scale, y - scale); (x, y + scale); (x + scale, y - scale)|]
 
 let render_player_pos state = failwith "TODO"
-(* Example animation
-
-   let move_rect pos size speed n =
-   let (x, y) = pos and (sx,sy) = size in
-   let mem = ref (Graphics.get_image x y sx sy) in 
-   let rec move_aux x y speed n =
-    if n = 0 then Graphics.moveto x y
-    else 
-     let ((nx,ny),n_speed) = calc_pv (x,y) (sx,sy) speed 
-     and old_mem = !mem in 
-      mem := Graphics.get_image nx ny sx sy;
-      Graphics.set_color Graphics.blue;
-      Graphics.fill_rect nx ny sx sy;
-      Graphics.draw_image (inv_image old_mem) x y;
-      move_aux nx ny n_speed (n-1)
-   in move_aux x y speed n *)
 
 let draw_lightning coord color scale = 
   let x = fst coord in 
@@ -373,8 +396,6 @@ let draw_jail coord prop =
   draw_rect x (y + sq_dim - header_height) sq_dim header_height;
   draw_jail_cell (x + padding, y + padding) 2;
   draw_string_in_tile Center coord ("IN JAIL") (14 * sq_dim / 25) 15
-
-let draw_buildings board = failwith "TODO"
 
 let draw_letter_box_offset x y color scale = 
   set_color black;
