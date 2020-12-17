@@ -73,7 +73,7 @@ let parse_int input =
 let rec check_player_num feedback = 
   ANSITerminal.(print_string [default] 
                   ("" ^ feedback));
-  print_string ("Choose the number of players in the game: there must be at least 2 players, and the max number is 4. \n If you want 3 players, enter '3'. \n");
+  print_string ("Choose the number of players in the game: there must be at least 2 players, and the max number is 4. \nIf you want 3 players, enter '3'. \n");
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> raise Empty
@@ -196,16 +196,22 @@ let init_game board =
   play_game state 
 
 let start_game f =
-  if Sys.file_exists f then 
-    Yojson.Basic.from_file f |> process_json |> init_game
+  let file = String.trim f in 
+  if file = "" then 
+    let () = print_string ("You have chosen to use the default board.\n\n") in 
+    Yojson.Basic.from_file "board.json" |> process_json |> init_game
+  else if Sys.file_exists f then 
+    let () = print_string ("You have chosen to use the custom board \"" 
+                           ^ file ^ "\". \n\n" ) in 
+    Yojson.Basic.from_file file |> process_json |> init_game
   else print_string ("The file \"" ^ 
-                     f ^ "\" does not exist. Create this file or try using a different one.\n");
+                     file ^ "\" does not exist. Create this file or try using a different one.\n");
   flush stdout
 
 let main () =
   ANSITerminal.(print_string [cyan] "");
   print_string opening_message;
-  print_endline "Please enter the name of the game file you want to load.\n";
+  print_endline "To use a custom board, enter the name of the board file you want to load.\nTo use the default Cornell board, just press 'Enter'.";
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()
