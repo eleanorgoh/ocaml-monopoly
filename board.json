@@ -121,8 +121,8 @@
     },
     {
       "position": 7,
-      "type": "Community Chest",
-      "name": "CC1",
+      "type": "In Jail Just Visiting",
+      "name": "In_jail_just_visiting",
       "color": "No Color",
       "rent_no_house": 0,
       "rent_1_house": 0,
@@ -190,7 +190,7 @@
     {
       "position": 11,
       "type": "Property",
-      "name": "Agr_Quad",
+      "name": "Ag_Quad",
       "color": "Orange",
       "rent_no_house": 14,
       "rent_1_house": 70,
@@ -274,8 +274,8 @@
     },
     {
       "position": 16,
-      "type": "Railroad",
-      "name": "Stewart",
+      "type": "Community Chest",
+      "name": "CC1",
       "color": "No Color",
       "rent_no_house": 0,
       "rent_1_house": 0,
@@ -284,9 +284,9 @@
       "rent_4_house": 0,
       "rent_hotel": 0,
       "building_cost": 0,
-      "price": 200,
-      "rent_no_station": 25,
-      "rent_station": 50,
+      "price": 0,
+      "rent_no_station": 0,
+      "rent_station": 0,
       "tax": 0
     },
     {
@@ -394,7 +394,7 @@
     {
       "position": 23,
       "type": "Railroad",
-      "name": "University",
+      "name": "Stewart",
       "color": "No Color",
       "rent_no_house": 0,
       "rent_1_house": 0,
@@ -411,7 +411,7 @@
     {
       "position": 24,
       "type": "Property",
-      "name": "Gothic_Houses",
+      "name": "Hans_Bethe",
       "color": "Green",
       "rent_no_house": 26,
       "rent_1_house": 130,
