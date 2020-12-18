@@ -256,6 +256,27 @@ let render_player_pos_helper player coord =
   | "Diamond" -> diamond_marker_centered coord magenta 10
   | _ -> failwith "Somehow got an incorrect player marker type."
 
+let handle_jail_positions x' y' x'' y'' 
+    player (rstate : Render_state.rstate) = function
+  | In_jail_just_visiting -> 
+    begin 
+      match player with 
+      | "Circle" -> 
+        if rstate.circle_jail then render_player_pos_helper player (x'', y'')
+        else render_player_pos_helper player (x', y')
+      | "Square" -> 
+        if rstate.square_jail then render_player_pos_helper player (x'', y'')
+        else render_player_pos_helper player (x', y')
+      | "Triangle" -> 
+        if rstate.triangle_jail then render_player_pos_helper player (x'', y'')
+        else render_player_pos_helper player (x', y')
+      | "Diamond" -> 
+        if rstate.diamond_jail then render_player_pos_helper player (x'', y'')
+        else render_player_pos_helper player (x', y')
+      | _ -> failwith "Somehow got an incorrect player marker type."
+    end
+  | _ -> render_player_pos_helper player (x'', y'')
+
 let rec render_player_positions rstate posns offset = 
   match posns with 
   | [] -> () 
@@ -267,38 +288,12 @@ let rec render_player_positions rstate posns offset =
       | Some pos ->
         let curr_tile_type = Newboard.get_type board pos in 
         let tile_coords = Stdlib.List.nth coords pos in
-        (* in header / not in jail *)
         let x' = fst tile_coords + sq_dim / 5 + offset in 
         let y' = snd tile_coords + sq_dim - header_height / 2 in 
-        (* in center / in jail*)
         let x'' = fst tile_coords + sq_dim / 5 + offset in 
         let y'' = snd tile_coords + sq_dim / 2 in 
-        (begin 
-          match curr_tile_type with 
-          | In_jail_just_visiting -> 
-            begin 
-              match player with 
-              | "Circle" -> 
-                if rstate.circle_jail then 
-                  render_player_pos_helper player (x'', y'')
-                else render_player_pos_helper player (x', y')
-              | "Square" -> 
-                if rstate.square_jail then 
-                  render_player_pos_helper player (x'', y'')
-                else render_player_pos_helper player (x', y')
-              | "Triangle" -> 
-                if rstate.triangle_jail then 
-                  render_player_pos_helper player (x'', y'')
-                else render_player_pos_helper player (x', y')
-              | "Diamond" -> 
-                if rstate.diamond_jail then 
-                  render_player_pos_helper player (x'', y'')
-                else render_player_pos_helper player (x', y')
-              | _ -> failwith "Somehow got an incorrect player marker type."
-            end
-          | _ ->       
-            render_player_pos_helper player (x'', y'')
-        end); render_player_positions rstate t (offset + 2 * padding) 
+        handle_jail_positions x' y' x'' y'' player rstate curr_tile_type; 
+        render_player_positions rstate t (offset + 2 * padding) 
     end
 
 let render_player_positions_from_state rstate = 
@@ -331,14 +326,12 @@ let draw_tile_utility coord prop =
 let draw_question_mark coord scale color = 
   let x = fst coord in 
   let y = snd coord in
-  set_color color; 
-  fill_rect x y (2 * scale) (2 * scale);
+  set_color color; fill_rect x y (2 * scale) (2 * scale);
   fill_rect x (y + 3 * scale) (2 * scale) (2 * scale);
   fill_rect x (y + 5 * scale) (5 * scale) (2 * scale);
   fill_rect (x + 3 * scale) (y + 7 * scale) (2 * scale) (3 * scale);
   fill_rect (x - scale) (y + 10 * scale) (6 * scale) (2 * scale);
-  set_color black;
-  draw_rect x y (2 * scale) (2 * scale);
+  set_color black; draw_rect x y (2 * scale) (2 * scale);
   moveto x (y + 3 * scale); lineto x (y + 7 * scale); 
   lineto (x + 3 * scale) (y + 7 * scale); 
   lineto (x + 3 * scale) (y + 10 * scale); lineto (x - scale) (y + 10 * scale);
@@ -362,10 +355,9 @@ let draw_tile_card coord prop =
     draw_question_mark (x', y') 4 light_blue
   | _ -> failwith "Cannot draw: Property is not a Chance or Community Card"
 
-let draw_car coord color scale = 
+let draw_car_body coord color scale = 
   let x = fst coord in 
-  let y = snd coord in 
-  (* Draw body of car *)
+  let y = snd coord in
   set_color color;
   fill_poly [|(x, y); (x, y + 3 * scale); (x + 2 * scale, y + 3 * scale); 
               (x + 5 * scale, y + 6 * scale); (x + 9 * scale, y + 6 * scale);
@@ -375,13 +367,19 @@ let draw_car coord color scale =
   draw_poly [|(x, y); (x, y + 3 * scale); (x + 2 * scale, y + 3 * scale); 
               (x + 5 * scale, y + 6 * scale); (x + 9 * scale, y + 6 * scale);
               (x + 12 * scale, y + 3 * scale); (x + 15 * scale, y + 3 * scale);
-              (x + 15 * scale, y)|];
-  (* Tires *)
+              (x + 15 * scale, y)|]
+
+let draw_car_tires coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in
   set_color gray;
   fill_circle (x + 4 * scale) y scale; fill_circle (x + 10 * scale) y scale;
   set_color black;
-  draw_circle (x + 4 * scale) y scale; draw_circle (x + 10 * scale) y scale;
-  (* Windows and lights *)
+  draw_circle (x + 4 * scale) y scale; draw_circle (x + 10 * scale) y scale
+
+let draw_car_accessories coord color scale = 
+  let x = fst coord in 
+  let y = snd coord in
   set_color red;
   fill_rect x (y + scale) (2 * scale) scale; 
   set_color yellow;
@@ -398,6 +396,11 @@ let draw_car coord color scale =
               (x + 7 * scale, y + 5 * scale); (x + 7 * scale, y + 3 * scale)|];
   draw_poly [|(x + 8 * scale, y + 3 * scale); (x + 8 * scale, y + 5 * scale);
               (x + 9 * scale, y + 5 * scale); (x + 11 * scale, y + 3 * scale)|]
+
+let draw_car coord color scale = 
+  draw_car_body coord color scale;
+  draw_car_tires coord color scale;
+  draw_car_accessories coord color scale
 
 let draw_tile_free_parking coord prop = 
   let x = fst coord in 
@@ -631,31 +634,23 @@ let handle_first_click rstate func_call chng_jail_func =
     if in_header then chng_jail_func rst'' false
     else chng_jail_func rst'' true
 
+let within_bounds status x y = 
+  status.mouse_x >= x && status.mouse_x <= x + 100 && status.mouse_y >= y
+  && status.mouse_y <= y + 40
+
 let detect_click rstate =
   let status = wait_next_event [Button_down] in
-  if status.mouse_x >= 850 && status.mouse_x <= 950 && status.mouse_y >= 600
-     && status.mouse_y <= 640 then 
-    handle_first_click rstate 
+  if within_bounds status 850 600 then handle_first_click rstate 
       Render_state.add_building_at_pos (fun rst bool -> rst)
-  else if status.mouse_x >= 850 && status.mouse_x <= 950 
-          && status.mouse_y >= 550 && status.mouse_y <= 590 then 
-    handle_first_click rstate 
+  else if within_bounds status 850 550 then handle_first_click rstate 
       Render_state.reset_buildings_at_pos (fun rst bool -> rst)
-  else if status.mouse_x >= 850 && status.mouse_x <= 950 
-          && status.mouse_y >= 500 && status.mouse_y <= 540 then 
-    handle_first_click rstate 
+  else if within_bounds status 850 500 then handle_first_click rstate 
       Render_state.move_circle Render_state.change_circle_jail
-  else if status.mouse_x >= 850 && status.mouse_x <= 950 
-          && status.mouse_y >= 450 && status.mouse_y <= 490 then 
-    handle_first_click rstate 
+  else if within_bounds status 850 450 then handle_first_click rstate 
       Render_state.move_diamond Render_state.change_diamond_jail
-  else if status.mouse_x >= 850 && status.mouse_x <= 950 
-          && status.mouse_y >= 400 && status.mouse_y <= 440 then 
-    handle_first_click rstate 
+  else if within_bounds status 850 400 then handle_first_click rstate 
       Render_state.move_square Render_state.change_square_jail
-  else if status.mouse_x >= 850 && status.mouse_x <= 950 
-          && status.mouse_y >= 350 && status.mouse_y <= 390 then 
-    handle_first_click rstate 
+  else if within_bounds status 850 350 then handle_first_click rstate 
       Render_state.move_triangle Render_state.change_triangle_jail
   else rstate
 
