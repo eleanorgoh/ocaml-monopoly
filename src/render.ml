@@ -256,9 +256,8 @@ let render_player_pos_helper player coord =
   | "Diamond" -> diamond_marker_centered coord magenta 10
   | _ -> failwith "Somehow got an incorrect player marker type."
 
-let handle_jail_positions x' y' x'' y'' curr_tile_type player 
-    (rstate : Render_state.rstate) =           
-  match curr_tile_type with 
+let handle_jail_positions x' y' x'' y'' 
+    player (rstate : Render_state.rstate) = function
   | In_jail_just_visiting -> 
     begin 
       match player with 
@@ -276,8 +275,7 @@ let handle_jail_positions x' y' x'' y'' curr_tile_type player
         else render_player_pos_helper player (x', y')
       | _ -> failwith "Somehow got an incorrect player marker type."
     end
-  | _ ->       
-    render_player_pos_helper player (x'', y'')
+  | _ -> render_player_pos_helper player (x'', y'')
 
 let rec render_player_positions rstate posns offset = 
   match posns with 
@@ -294,7 +292,7 @@ let rec render_player_positions rstate posns offset =
         let y' = snd tile_coords + sq_dim - header_height / 2 in 
         let x'' = fst tile_coords + sq_dim / 5 + offset in 
         let y'' = snd tile_coords + sq_dim / 2 in 
-        handle_jail_positions x' y' x'' y'' curr_tile_type player rstate; 
+        handle_jail_positions x' y' x'' y'' player rstate curr_tile_type; 
         render_player_positions rstate t (offset + 2 * padding) 
     end
 
