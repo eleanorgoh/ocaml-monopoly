@@ -1,9 +1,13 @@
 # Dependencies
 Manual install:
-1. OCaml Graphics: Run `opam install graphics`. 
-Make sure you have XQuartz (Check 3110 page for instructions).
+1. Graphics: Run `opam install graphics`. Mac users must have XQuartz; check instructions below.
 2. Yojson: Run `opam install yojson`. 
 3. ANSITerminal: Run `opam install ANSIterminal`.
+
+Mac Users:
+1. Download XQuartz.
+2. If you used Macports to install OCaml, `opam switch reinstall 4.06.0`
+3. If you used Homebrew, `brew reinstall ocaml --with-x11`
 
 # How to install and build Monopoly: 
 Open two command line windows, and from the top directory `~/monopoly`: 
@@ -14,7 +18,7 @@ as a real-life board to keep track of any moves the players make in the game.
 
 # Testing: 
 From the top directory `~/monopoly`: 
-1. Run `make tests` to run all OUnit tests contained in `test.ml`. See the 
+1. Run `make test` to run all OUnit tests contained in `test.ml`. See the 
 comment at the top of `test.ml` for the test plan and rationale. 
 
 # Documentation

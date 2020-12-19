@@ -1,5 +1,5 @@
 # Monopoly
-A Cornell themed Monopoly game written in Ocaml.
+A Cornell-themed Monopoly game written in OCaml.
 
 ## Table of Contents
 1. [Overview](#Overview)
@@ -11,10 +11,12 @@ A Cornell themed Monopoly game written in Ocaml.
 
 ## Overview
 ### Description
-Insert overview of system here
+Just like in classic Monopoly, users exchange money and claim properties in the fight to be the last man who’s not bankrupt. Each property on the default board is a location at Cornell with a corresponding color type, price, and rent.
 
 ### Features
-- Insert description of features here  
+- All features of classic Monopoly are supported.
+- Users can design a board themselves and import it into the game in JSON format 
+- Users can track the state of the game using our interactive GUI. They can move their player markers and add buildings to properties
 
 ## Game Demo
 ### Starting the game
@@ -29,10 +31,14 @@ Insert overview of system here
 ## Install and Build
 ### Dependencies
 Manually install the following dependencies: 
-- OCaml Graphics: Run `opam install graphics`. 
-Make sure you have XQuartz (Check 3110 page for instructions).
+- Graphics: Run `opam install graphics`. Mac users must have XQuartz; check instructions below.
 - Yojson: Run `opam install yojson`. 
 - ANSITerminal: Run `opam install ANSIterminal`.
+
+Mac Users:
+1. Download XQuartz.
+2. If you used Macports to install OCaml, `opam switch reinstall 4.06.0`
+3. If you used Homebrew, `brew reinstall ocaml --with-x11`
 
 ### Build
 Open two command line windows, and from the top directory `~/monopoly`: 
