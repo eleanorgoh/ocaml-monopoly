@@ -25,7 +25,7 @@ let current_pos_test = [
   two_arg_func_test "Player: name = 'Sam', position = 0" 
     current_pos state_2 "Sam" string_of_int 0;
   two_arg_func_test "Player: name = 'Eleanor', position = 0" 
-    current_pos state_2 "Eleanor" string_of_int 0;
+    current_pos state_3 "Eleanor" string_of_int 0;
   two_arg_func_test "Player: name = 'Sam', position = 0" 
     current_pos state_2 "Sam" string_of_int 0;
 ]
@@ -55,7 +55,7 @@ let valid_command_tests = [
   valid_command_test "test for command = End_Turn" state_1 End_Turn true;
   valid_command_test "test for command = Forfeit" state_1 Forfeit true;
   valid_command_test "test for command = Roll" state_1 Roll true;
-  valid_command_test "test for command = Buy" state_1 (Buy "PSB") true;
+  valid_command_test "test for command = Buy" state_1 (Buy "PSB") false;
   valid_command_test "test for command = Sell" state_1 (Sell "PSB") false;
   valid_command_test "test for command = Quit" state_1 Quit true;
 ]

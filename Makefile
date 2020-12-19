@@ -20,6 +20,8 @@ command-test:
 	$(OCAMLBUILD) -tag 'debug' src/command_test.byte && ./command_test.byte
 card-test:
 	$(OCAMLBUILD) -tag 'debug' src/card_test.byte && ./card_test.byte
+state-test:
+	$(OCAMLBUILD) -tag 'debug' src/state_test.byte && ./state_test.byte
 
 graphics:
 	ocamlbuild -use-ocamlfind -pkg graphics src/render.native --
