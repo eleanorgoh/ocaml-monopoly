@@ -18,13 +18,13 @@ Insert overview of system here
 
 ## Game Demo
 ### Starting the game
-<img src="/assets/init_game.GIF" width=300/>
+<img src="/assets/init_game.GIF" width=450/>
 
 ### Using the GUI as a game board
-<img src="/assets/gui.GIF" width=300/>
+<img src="/assets/gui.GIF" width=450/>
 
 ### Playing the game
-<img src="/assets/jail.GIF" width=300/>
+<img src="/assets/jail.GIF" width=450/>
 
 ## Install and Build
 ### Dependencies
