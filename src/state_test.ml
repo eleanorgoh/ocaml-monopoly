@@ -1,22 +1,37 @@
 open OUnit2
-open Cc_card
+open State
+open Newboard
+open Player
 open Test_utils
 
-(** [string_of_card card] is the string form of [card]. *)
-let string_of_card = function 
-  | Community -> "Community"
-  | Chance -> "Chance"
+type 
+  let get_player_pos_tests = [
+    one_arg_func_test "Players"  
 
 
-(** [string_of_action action] is the string form of [action]. *)
-let string_of_action  = function
-  | Pay int -> "Pay"
-  | Receive int -> "Receive"
-  | Advance int-> "Advance"
-  | OutJail -> "OutJail"
-  | GoJail -> "GoJail"
+
+  ]
 
 
+let board = json_board "board.json"
+let new_board = from_json board
+let state = [
+
+]
+let player_1 = init_new_player "David" "Velasquez"
+
+
+let init_state_tests = [
+  two_arg_getter "Player: name = 'Joe', marker = 'default' - test name" 
+    init_state "Joe" "default" get_name String.escaped "Joe";
+  two_arg_getter "Player: name = 'Bobo', marker = 'ugly' - test marker" 
+    init_state "Bobo" "ugly" get_marker_type String.escaped "ugly";
+  two_arg_getter "Player: name = 'Bobo', marker = 'ugly' - test money" 
+    init_state "Bobo" "ugly" get_money string_of_int 1500;
+  two_arg_getter "Player: name = 'Bobo', marker = 'ugly' - test properties" 
+    init_state "Bobo" "ugly" Player.get_properties 
+    (pp_list property_to_string) [];
+]
 let card1 = init_card Community "Pay $200 for taxes" (Pay 200)
 let card2 = init_card Chance "Receive $200 from bank for birthday" (Receive 200)
 let card3 = init_card Community "Get out of jail free card" (OutJail)
