@@ -9,18 +9,18 @@ open Test_utils
 (* --------------------------- TESTING APPROACH ---------------------------
    1. OUnit tests
    - The following modules were tested by OUnit: Action, Player, Cc_card, 
-     Command, Property, and State. Tests were developed using both black box 
-     and white box testing. We aimed to test every function in these modules, 
-     testing both that the output was correct given the input and that 
-     the tests would reach all branches of code within those functions. 
-     We also tested that exceptions were raised. It was important to 
-     thoroughly test these modules because they make up the foundation 
-     of the game, and some modules like Action use functions defined in 
-     other modules like Player. When playing the game, there are many 
-     different moves that players can make that can result in different 
-     states of the game, and illegal moves raise exceptions. Using this 
-     testing approach, we were able to ensure the correctness of what 
-     was happening in the game. 
+     Command, Property, Newboard, and State. Tests were developed using 
+     both black box and white box testing. We aimed to test every 
+     function in these modules, testing both that the output was 
+     correct given the input and that the tests would reach all branches 
+     of code within those functions. We also tested that exceptions were 
+     raised. It was important to thoroughly test these modules because 
+     they make up the foundation of the game, and some modules like 
+     Action use functions defined in other modules like Player. When 
+     playing the game, there are many different moves that players can 
+     make that can result in different states of the game, and illegal 
+     moves raise exceptions. Using this testing approach, we were able 
+     to ensure the correctness of what was happening in the game. 
 
    3. Manual tests
    - The following modules were tested manually: Render and Main. 
@@ -534,6 +534,33 @@ let add_property_tests = [
     2 buildings" get_rent_cost prop4_2build string_of_int 2;
 ]
 
+(* --------------------------- NEWBOARD TESTS --------------------------- *)
+
+let board = "board.json" |> Yojson.Basic.from_file |> Newboard.from_json 
+
+let newboard_tests = [
+  two_arg_func_test "board get name position 0: Go" 
+    Newboard.get_name board 0 String.escaped "Go";
+  one_arg_func_test "board get names of all tiles"
+    Newboard.get_names board (pp_list String.escaped) 
+    ["Go"; "PSB"; "Goldie's"; "Rockefeller"; "Goldwin-Smith"; "Triphammer"; 
+     "Statler"; "In_jail_just_visiting"; "UT1"; "Mac's"; "CHC1"; "Ag_Quad"; 
+     "Dairy_Bar"; "Phillips"; "Go_to_jail"; "Mattin's"; "CC1"; "Ho_Plaza"; 
+     "Libe_Slope"; "Tax"; "CHC2"; "Free_Parking"; "Baker's_Flagpole"; 
+     "Stewart"; "Hans_Bethe"; "CC2"; "CTB"; "Cascadilla"];
+  two_arg_func_test "board get color at position 27: Dark Blue"
+    Newboard.get_color board 27 string_of_color Dark_Blue;
+  two_arg_func_test "board get type at position 27: Property"
+    Newboard.get_type board 27 Property.string_of_property_type Property;
+  two_arg_func_test "board get rent at position 26: 35" Newboard.get_rent 
+    board 26 string_of_int 35;
+  two_arg_func_test "board get building cost at position 26: 200" 
+    Newboard.get_building_cost board 26 string_of_int 200;
+  two_arg_func_test "board get num buildings at position 24: 0" 
+    Newboard.get_num_buildings board 24 string_of_int 0;
+
+]
+
 let suite =
   "test suite"  >::: List.flatten [
 
@@ -555,6 +582,9 @@ let suite =
     (* Property test suite *)
     init_property_tests;
     add_property_tests;
+
+    (* Newboard test suite *)
+    newboard_tests;
   ]
 
 let _ = run_test_tt_main suite

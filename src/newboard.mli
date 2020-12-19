@@ -40,5 +40,5 @@ val get_building_cost : t -> int -> int
 val get_num_buildings : t -> int -> int
 
 (** [reset_properties board p] resets all the tiles that player [p] owned. 
-    This is for when a player forfeits and all his buildings are removed.*)
+    This is for when a player forfeits and all their buildings are removed.*)
 val reset_properties : t -> Player.t -> t

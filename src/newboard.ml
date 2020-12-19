@@ -30,58 +30,70 @@ let match_type (str : string) : Property.tile_type =
   | "Go" -> Property.Go
   | _ -> failwith "Type DNE."
 
+let make_property json = 
+  let pos = json |> member "position" |> to_int in
+  let name = json |> member "name" |> to_string in
+  let color = json |> member "color" |> to_string |> match_color in
+  let r0 = json |> member "rent_no_house" |> to_int in
+  let r1 = json |> member "rent_1_house" |> to_int in
+  let r2 = json |> member "rent_2_house" |> to_int in
+  let r3 = json |> member "rent_3_house" |> to_int in
+  let r4 = json |> member "rent_4_house" |> to_int in
+  let rh = json |> member "rent_hotel" |> to_int in
+  let bc = json |> member "building_cost" |> to_int in
+  let p = json |> member "price" |> to_int in
+  Property.init_property pos name color Property.Property 
+    r0 r1 r2 r3 r4 rh bc p 0
 
-let tile_json (j : Yojson.Basic.t) = 
-  let tile_type = j |> member "type" |> to_string |> match_type in
+let make_railroad json = 
+  let pos = json |> member "position" |> to_int in
+  let name = json |> member "name" |> to_string in
+  let color = Property.No_Color in
+  let r0 = json |> member "rent_no_station" |> to_int in
+  let rs = json |> member "rent_station" |> to_int in
+  let bc = json |> member "building_cost" |> to_int in
+  let p = json |> member "price" |> to_int in
+  Property.init_property pos name color Property.Railroad 
+    0 0 0 0 r0 rs bc p 4
+
+let make_utility json = 
+  let pos = json |> member "position" |> to_int in
+  let color = Property.No_Color in
+  let name = json |> member "name" |> to_string in
+  let r = json |> member "rent_no_house" |> to_int in
+  let p = json |> member "price" |> to_int in
+  Property.init_property pos name color Property.Utility 0 0 0 0 0 r 0 p 5
+
+let make_tax json = 
+  let pos = json |> member "position" |> to_int in
+  let color = Property.No_Color in
+  let name = json |> member "name" |> to_string in
+  let tax = json |> member "tax" |> to_int in
+  Property.init_property pos name color Property.Tax 0 0 0 0 0 tax 0 0 5
+
+let make_go json = 
+  let pos = json |> member "position" |> to_int in
+  let name = json |> member "name" |> to_string in
+  let color = Property.No_Color in
+  Property.init_property pos name color Property.Go 0 0 0 0 0 0 0 0 5
+
+
+let tile_json (json : Yojson.Basic.t) = 
+  let tile_type = json |> member "type" |> to_string |> match_type in
   match tile_type with
-  | Property -> 
-    let pos = j |> member "position" |> to_int in
-    let name = j |> member "name" |> to_string in
-    let color = j |> member "color" |> to_string |> match_color in
-    let r0 = j |> member "rent_no_house" |> to_int in
-    let r1 = j |> member "rent_1_house" |> to_int in
-    let r2 = j |> member "rent_2_house" |> to_int in
-    let r3 = j |> member "rent_3_house" |> to_int in
-    let r4 = j |> member "rent_4_house" |> to_int in
-    let rh = j |> member "rent_hotel" |> to_int in
-    let bc = j |> member "building_cost" |> to_int in
-    let p = j |> member "price" |> to_int in
-    Property.init_property pos name color tile_type r0 r1 r2 r3 r4 rh bc p 0
-  | Railroad ->
-    let pos = j |> member "position" |> to_int in
-    let name = j |> member "name" |> to_string in
-    let color = Property.No_Color in
-    let r0 = j |> member "rent_no_station" |> to_int in
-    let rs = j |> member "rent_station" |> to_int in
-    let bc = j |> member "building_cost" |> to_int in
-    let p = j |> member "price" |> to_int in
-    Property.init_property pos name color tile_type 0 0 0 0 r0 rs bc p 4
-  | Utility ->
-    let pos = j |> member "position" |> to_int in
-    let color = Property.No_Color in
-    let name = j |> member "name" |> to_string in
-    let r = j |> member "rent_no_house" |> to_int in
-    let p = j |> member "price" |> to_int in
-    Property.init_property pos name color tile_type 0 0 0 0 0 r 0 p 5
-  | Tax ->
-    let pos = j |> member "position" |> to_int in
-    let color = Property.No_Color in
-    let name = j |> member "name" |> to_string in
-    let tax = j |> member "tax" |> to_int in
-    Property.init_property pos name color tile_type 0 0 0 0 0 tax 0 0 5
+  | Property -> make_property json
+  | Railroad -> make_railroad json
+  | Utility -> make_utility json
+  | Tax -> make_tax json
   | Chance_card
   | Community_chest
   | Free_parking
   | Go_to_jail
   | In_jail_just_visiting
-  | Go ->
-    let pos = j |> member "position" |> to_int in
-    let name = j |> member "name" |> to_string in
-    let color = Property.No_Color in
-    Property.init_property pos name color tile_type 0 0 0 0 0 0 0 0 5
+  | Go -> make_go json
 
-let json_board (j : Yojson.Basic.t) : t = 
-  j |> member "tiles" |> to_list |> List.map tile_json
+let json_board (json : Yojson.Basic.t) : t = 
+  json |> member "tiles" |> to_list |> List.map tile_json
 
 let from_json (json : Yojson.Basic.t) : t = 
   try json_board json
