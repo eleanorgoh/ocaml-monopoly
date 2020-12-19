@@ -17,14 +17,14 @@ Insert overview of system here
 - Insert description of features here  
 
 ## Game Demo
-Initializing the game
-![Game Initialization](/assets/init_game.GIF)
+### Initializing the game
+![Game Initialization](/assets/init_game.GIF=250x)
 
-Using the GUI as a game board
-![GUI](/assets/gui.GIF)
+### Using the GUI as a game board
+![GUI](/assets/gui.GIF=250x)
 
-Playing the game
-![Playing Game](/assets/jail.GIF)
+### Playing the game
+![Playing Game](/assets/jail.GIF=250x)
 
 ## Install and Build
 ### Dependencies
