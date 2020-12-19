@@ -1,3 +1,7 @@
+(**
+   The main entry point for the game interface. 
+   Starts the game and runs it. 
+*)
 
 (** Raised if user input is empty. *)
 exception Empty 
@@ -26,7 +30,8 @@ val check_player_num : string -> int
     (3) the input resolves to a marker that has already been taken
     then [feedback] is printed, and the user is prompted to 
     enter another input.  *)
-val check_player_info : string -> int -> string list -> string list -> string * string
+val check_player_info : string -> int -> string list -> string list -> 
+  string * string
 
 (** [handle_turn feedback state] is a tuple in which the first element is 
     the state after processing a command from the user and the second element 

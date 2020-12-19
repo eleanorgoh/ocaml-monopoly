@@ -27,8 +27,9 @@ let start_message = "\n███████╗████████╗ █�
                                           \n"
 
 
-let end_message = "\n\n" ^ 
-                  " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ 
+let end_message = 
+  "\n\n" ^ 
+  " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ 
 ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗
 ██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝
 ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗
@@ -58,7 +59,8 @@ let parse_player_info info names markers =
     if List.mem name names then 
       raise (PlayerException ("Error: The name '" ^ 
                               name 
-                              ^ "' is already taken. \n Please choose another name. \n"))
+                              ^ "' is already taken. \n" 
+                              ^ "Please choose another name. \n"))
     else 
       let marker = List.hd markers in (name, marker)
   | _ -> raise (PlayerException "Error: The name must be one word. \n")
@@ -74,7 +76,9 @@ let parse_int input =
 let rec check_player_num feedback = 
   ANSITerminal.(print_string [default] 
                   ("" ^ feedback));
-  print_string ("Choose the number of players in the game: there must be at least 2 players, and the max number is 4. \nIf you want 3 players, enter '3'. \n");
+  print_string ("Choose the number of players in the game: \nthere must be at " 
+                ^ "least 2 players, and the max number is 4. " 
+                ^ "\nIf you want 3 players, enter '3'. \n");
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> raise Empty
@@ -89,8 +93,9 @@ let rec check_player_num feedback =
 let rec check_player_info feedback player_num names markers = 
   ANSITerminal.(print_string [default] 
                   ("" ^ feedback));
-  print_string ("Player " ^ string_of_int player_num 
-                ^ ": enter your player name. \n Ex: If your name is Joe, enter 'Joe'. \n");
+  print_string ("\nPlayer " ^ string_of_int player_num 
+                ^ ": enter your player name. " ^ 
+                "\nEx: If your name is Joe, enter 'Joe'. \n");
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> raise Empty
@@ -137,7 +142,8 @@ let rec handle_turn feedback state =
       let is_valid = valid_command state command in 
       if not is_valid then 
         handle_turn (Command.to_string command 
-                     ^ " is not a valid command for you at this moment in the game. Enter another command. \n") 
+                     ^ " is not a valid command for you at this moment "
+                     ^ "in the game. Enter another command. \n") 
           state 
       else handle_valid_command state command
     with 
@@ -201,13 +207,16 @@ let start_game f =
                            ^ file ^ "\". \n\n" ) in 
     Yojson.Basic.from_file file |> process_json |> init_game
   else print_string ("The file \"" ^ 
-                     file ^ "\" does not exist. Create this file or try using a different one.\n");
+                     file ^ "\" does not exist." 
+                     ^ "\nCreate this file or try using a different one.\n");
   flush stdout
 
 let main () =
   ANSITerminal.(print_string [cyan] "");
   print_string opening_message;
-  print_endline "To use a custom board, enter the name of the board file you want to load.\nTo use the default Cornell board, just press 'Enter'.";
+  print_string ( 
+    "To use a custom board, enter the name of the board file you want to load."
+    ^ "\nTo use the default Cornell board, just press 'Enter'.\n");
   print_string  "> ";
   match read_line () with
   | exception End_of_file -> ()

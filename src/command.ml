@@ -82,7 +82,8 @@ let create_command = function
   | h :: [] -> check_one_arg_input h
   | h :: t :: [] -> check_two_arg_input h t
   | h :: str1 :: str2 :: [] -> check_buysell_input h str1 str2 
-  | h :: p1 :: p2 :: str1 :: str2 :: [] -> check_collect_input h p1 p2 str1 str2
+  | h :: p1 :: p2 :: str1 :: str2 :: [] -> check_collect_input h p1 p2 
+                                             str1 str2
   | _ -> raise (Unparsable "Please enter a valid command.")
 
 let parse str =

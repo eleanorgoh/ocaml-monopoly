@@ -134,8 +134,7 @@ let draw_go coord scale =
   let x' = x + 2 in 
   let y' = y + 2 in
   let helper color x y = 
-    set_color color; 
-    fill_rect x y (scale*7) (scale*2);
+    set_color color; fill_rect x y (scale*7) (scale*2);
     fill_rect x (y+scale*2) (scale*2) (scale*5); 
     fill_rect x (y+scale*7) (scale*7) (scale*2); 
     fill_rect (x+scale*5) (y+scale*2) (scale*2) (scale*1); 
@@ -180,17 +179,13 @@ let draw_tile_railroad coord prop =
 let draw_tax coord scale color = 
   let x = fst coord in 
   let y = snd coord in 
-  set_color color; 
-  (* T *)
-  fill_rect (x + 2 * scale) y (2 * scale) (7 * scale); 
+  set_color color; fill_rect (x + 2 * scale) y (2 * scale) (7 * scale); 
   fill_rect x (y + 7 * scale) (6 * scale) (2 * scale);
-  (* A *)
   fill_rect (x + 7 * scale) y (2 * scale) (5 * scale);
   fill_rect (x + 9 * scale) y scale (scale);
   fill_rect (x + 9 * scale) (y + 4 * scale) scale (scale);
   fill_rect (x + 10 * scale) y (2 * scale) (8 * scale); 
   fill_rect (x + 7 * scale) (y + 6 * scale) (3 * scale) (2 * scale);
-  (* X *)
   fill_poly [|(x + 13 * scale, y + 6 * scale); (x + 13 * scale, y + 8 * scale);
               (x + 15 * scale, y + 8 * scale); (x + 21 * scale, y + 2 * scale);
               (x + 21 * scale, y); (x + 19 * scale, y);|];
