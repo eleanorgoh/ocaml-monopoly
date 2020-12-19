@@ -7,6 +7,8 @@ let string_of_card = function
   | Community -> "Community"
   | Chance -> "Chance"
 
+
+(** [string_of_action action] is the string form of [action]. *)
 let string_of_action  = function
   | Pay int -> "Pay"
   | Receive int -> "Receive"
