@@ -18,13 +18,13 @@ Insert overview of system here
 
 ## Game Demo
 ### Initializing the game
-![Game Initialization](/assets/init_game.GIF=250x)
+<img src="/assets/init_game.GIF" width=50/>
 
 ### Using the GUI as a game board
-![GUI](/assets/gui.GIF=250x)
+<img src="/assets/gui.GIF" width=50/>
 
 ### Playing the game
-![Playing Game](/assets/jail.GIF=250x)
+<img src="/assets/jail.GIF" width=50/>
 
 ## Install and Build
 ### Dependencies
