@@ -16,5 +16,6 @@ as a real-life board to keep track of any moves the players make in the game.
 1. Run `make tests` to run all OUnit tests contained in `test.ml`. See the 
 comment at the top of `test.ml` for the test plan and rationale. 
 
+# Documentation
 1. Run `make docs` to generate HTML documentation. 
 2. Open `docs.public/index.html` in a local browser to view the documentation. 

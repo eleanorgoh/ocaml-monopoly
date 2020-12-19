@@ -22,6 +22,8 @@ card-test:
 	$(OCAMLBUILD) -tag 'debug' src/card_test.byte && ./card_test.byte
 test:
 	$(OCAMLBUILD) -tag 'debug' src/test.byte && ./test.byte
+state-test:
+	$(OCAMLBUILD) -tag 'debug' src/state_test.byte && ./state_test.byte
 
 graphics:
 	ocamlbuild -use-ocamlfind -pkg graphics src/render.native --
