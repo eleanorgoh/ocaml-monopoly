@@ -1,3 +1,7 @@
+(**
+   The main entry point for the game interface. 
+   Starts the game and runs it. 
+*)
 
 (** Raised if user input is empty. *)
 exception Empty 

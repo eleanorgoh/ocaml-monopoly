@@ -1,6 +1,11 @@
+(**
+   Represents players and their data. 
+*)
+
 (** The abstract type of values representing a player. *)
 type t
 
+(** Raised if there is an error updating a player's data.  *)
 exception UpdateError of string 
 
 (** [init_new_player name marker] initializes a new player with 
@@ -54,4 +59,3 @@ val set_marker_type : t -> string -> t
 
 (** [player_to_string p] is the string representatin of player [p]. *)
 val player_to_string : t -> string
-

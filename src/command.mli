@@ -1,5 +1,5 @@
 
-(** The type of values representing a command a player can issue. 
+(** Represents commands a player can issue. 
     1. [Start]: start the game.
     2. [Quit]: quit the game.
     3. [Restart]: restart the game.
@@ -106,7 +106,7 @@ val create_command : string list -> t
 
     [parse] is not case-sensitive, e.g. [parse "name John"] results in the 
     same command as [parse "name john"] -> "[Player_Name "John"]; 
-    "parse "sell londON AvE"] results in the same command as 
+    "[parse "sell londON AvE"] results in the same command as 
     [parse "Sell London Ave"] -> [Sell "london ave"].
 
     Requires: 

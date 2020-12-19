@@ -1,5 +1,8 @@
 
-(* Properties may be bought in one of 3 ways: landing on the property space 
+(** 
+   Representation of property data. 
+
+   Properties may be bought in one of 3 ways: landing on the property space 
    and buying it, being the highest bidder in an auction for property, 
    or buy it from an opponent in a trade. Properties may also be received from 
    bankrupted players, provided the Bank didn't bankrupt them.
@@ -30,7 +33,7 @@ type color =
   | Dark_Blue
   | No_Color
 
-(** [type] is the type of tile. Every tile is implemented as a property *)
+(** [type] is the type of tile. Every tile is implemented as a property. *)
 type tile_type = 
   | Property
   | Railroad

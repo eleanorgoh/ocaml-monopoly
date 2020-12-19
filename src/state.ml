@@ -235,6 +235,7 @@ and handle_end_turn state command =
   let new_lst = (List.tl state.players)@[curr_player] in 
   {state with players = new_lst; num_rolls = 0}
 
+
 and handle_buy state command str = 
   let player = fst (List.hd state.players) in 
   let pos = snd (List.hd state.players) in 
@@ -307,6 +308,7 @@ and roll_jail_helper state =
       num_rolls = 0;
     }
   else 
+    let () = roll_jail_pay_helper player in
     {
       players = (player, pos)::List.tl state.players;
       board = state.board;
@@ -314,6 +316,13 @@ and roll_jail_helper state =
       community_stack = state.community_stack;
       num_rolls = 1;
     } 
+
+and roll_jail_pay_helper player = 
+  let balance = Player.get_money player in 
+  Player.set_money player (balance - 50); 
+  print_string ("\nYou have to pay the bank $50 :(. \n");
+  print_string ("Your balance is now: $" 
+                ^ string_of_int (Player.get_money player) ^ "\n");
 
 and card_helper card state = 
   let player = fst (List.hd state.players) in 
@@ -444,6 +453,6 @@ and get_charged state property =
     | Some h -> let owner = h in 
       Action.collect_rent owner player property;
       print_string ("You are being charged for rent by " 
-                    ^ (Player.get_name owner) ^ " for property " 
+                    ^ (Player.get_name owner) ^ " for: " 
                     ^ (Property.get_name property) ^ ". \n");
       state

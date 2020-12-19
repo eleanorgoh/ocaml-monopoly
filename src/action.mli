@@ -1,3 +1,7 @@
+(**
+   Represents actions that players can take. 
+*)
+
 
 (** [t] is the abstract type of values representing an Action. 
 
@@ -9,14 +13,16 @@
     (iv) Draw_Community if the player should draw from the deck of Community 
     Chest cards.
 *)
-
 type t = 
   | Jail
   | Step of int 
   | Draw_Chance 
   | Draw_Community
 
+(** Raised if a transaction cannot be completed.. *)
 exception TransactionError of string
+
+(** Raised if the player is bankrupt. *)
 exception PlayerBankrupt of string
 
 (** [roll_dice] is the outcome of a player's roll in one turn. *)

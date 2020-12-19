@@ -1,9 +1,10 @@
-(** Defines Community Chest/Chance cards. *)
+(** Represents Community Chest/Chance cards. *)
 
 (** [t] is the abstract type of values representing a CC card. *)
 type t
 
-(** [category] defines the type of the card. *)
+(** [category] defines the type of the card, 
+    either Community Chest or Chance. *)
 type category = 
   | Community
   | Chance
