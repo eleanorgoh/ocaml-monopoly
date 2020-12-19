@@ -71,11 +71,11 @@ let make_tax json =
   let tax = json |> member "tax" |> to_int in
   Property.init_property pos name color Property.Tax 0 0 0 0 0 tax 0 0 5
 
-let make_go json = 
+let make_general tile_type json = 
   let pos = json |> member "position" |> to_int in
   let name = json |> member "name" |> to_string in
   let color = Property.No_Color in
-  Property.init_property pos name color Property.Go 0 0 0 0 0 0 0 0 5
+  Property.init_property pos name color tile_type 0 0 0 0 0 0 0 0 5
 
 
 let tile_json (json : Yojson.Basic.t) = 
@@ -90,7 +90,7 @@ let tile_json (json : Yojson.Basic.t) =
   | Free_parking
   | Go_to_jail
   | In_jail_just_visiting
-  | Go -> make_go json
+  | Go -> make_general tile_type json
 
 let json_board (json : Yojson.Basic.t) : t = 
   json |> member "tiles" |> to_list |> List.map tile_json
