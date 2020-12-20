@@ -26,7 +26,7 @@ clean:
 	ocamlbuild -clean
 
 zip:
-	zip monopoly.zip *.ml* *.json src/*.ml* .ocamlinit .merlin *.md _tags Makefile
+	zip monopoly.zip *.ml* *.json src/*.ml* assets/*GIF .ocamlinit .merlin *.md _tags Makefile
 
 docs: docs-public 
 	
